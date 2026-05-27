@@ -7,157 +7,166 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#090f1e;
-  --surf:#111c2e;
-  --surf2:#172035;
-  --bdr:#1e2d48;
-  --bdr2:#253759;
-  --txt:#e2e8f0;
-  --muted:#5a7397;
-  --accent:#6366f1;
-  --green:#10b981;
-  --orange:#f59e0b;
-  --red:#ef4444;
-  --yellow:#eab308;
-  --indigo:#818cf8;
-  --purple:#a78bfa;
+  --bg:#0f1520;
+  --surf:#17202e;
+  --surf2:#1e2a3c;
+  --surf3:#243245;
+  --bdr:#2a3a52;
+  --txt:#dce8f5;
+  --muted:#6b82a0;
+  --soft:#8ba0bc;
+  --accent:#4f8ef7;
+  --green:#22c55e;
+  --orange:#f97316;
+  --sky:#38bdf8;
+  --yellow:#facc15;
+  --red:#f87171;
 }
-body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;font-size:14px}
 
 /* ── PIN SCREEN ── */
-#pinScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;z-index:9999}
-.pin-logo{font-size:52px;margin-bottom:4px}
-.pin-title{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+#pinScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;z-index:9999}
+.pin-logo{font-size:48px}
+.pin-title{font-size:20px;font-weight:700;color:var(--txt)}
 .pin-sub{font-size:13px;color:var(--muted)}
-.pin-dots{display:flex;gap:14px}
-.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr2);background:transparent;transition:.15s}
-.dot.on{background:var(--accent);border-color:var(--accent);transform:scale(1.1)}
-.pin-err{font-size:13px;color:var(--red);min-height:18px;text-align:center}
-.numpad{display:grid;grid-template-columns:repeat(3,76px);gap:10px}
-.nk{width:76px;height:76px;border-radius:50%;border:1px solid var(--bdr2);background:var(--surf);color:var(--txt);font-size:22px;font-weight:600;cursor:pointer;transition:.12s;display:flex;align-items:center;justify-content:center}
-.nk:hover{background:var(--surf2);border-color:var(--accent)}
-.nk:active{transform:scale(.93);background:var(--accent);border-color:var(--accent)}
-.nk.wide{border-radius:38px;font-size:13px;color:var(--muted)}
+.pin-dots{display:flex;gap:16px}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--bdr);background:transparent;transition:.15s}
+.dot.on{background:var(--accent);border-color:var(--accent)}
+.pin-err{font-size:12px;color:var(--red);min-height:16px;text-align:center}
+.numpad{display:grid;grid-template-columns:repeat(3,72px);gap:10px}
+.nk{width:72px;height:72px;border-radius:50%;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);font-size:22px;font-weight:600;cursor:pointer;transition:.12s;display:flex;align-items:center;justify-content:center}
+.nk:hover{background:var(--surf2)}
+.nk:active{transform:scale(.92);background:var(--accent);border-color:var(--accent);color:#fff}
+.nk.wide{border-radius:36px;font-size:12px;color:var(--muted);font-weight:500}
 
-/* ── APP SHELL ── */
+/* ── APP ── */
 #app{display:none;min-height:100vh}
-header{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 18px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100}
-.logo{font-size:17px;font-weight:800;letter-spacing:-.3px}.logo em{color:var(--accent);font-style:normal}
+header{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.logo{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--txt)}.logo em{color:var(--accent);font-style:normal}
 .hdr-r{display:flex;gap:8px;align-items:center}
-.sync-pill{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--bdr);color:var(--muted);cursor:pointer;white-space:nowrap;transition:.2s}
+.sync-pill{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid var(--bdr);color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500}
 .sync-pill.ok{border-color:var(--green);color:var(--green)}
 .sync-pill.busy{border-color:var(--orange);color:var(--orange)}
 .sync-pill.err{border-color:var(--red);color:var(--red)}
-.ico-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--bdr);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.15s}
+.ico-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--bdr);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s}
 .ico-btn:hover{background:var(--surf2);color:var(--txt)}
-.tabs-nav{background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;padding:0 18px;gap:2px;overflow-x:auto;scrollbar-width:none}
+
+/* ── TABS ── */
+.tabs-nav{background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;padding:0 20px;gap:0;overflow-x:auto;scrollbar-width:none}
 .tabs-nav::-webkit-scrollbar{display:none}
-.tb{padding:12px 16px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap}
+.tb{padding:14px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap}
 .tb.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tb:hover:not(.active){color:var(--txt)}
 
 /* ── PANELS ── */
-.panel{display:none;padding:20px 18px;max-width:1440px;margin:0 auto}
+.panel{display:none;padding:24px 20px;max-width:1440px;margin:0 auto}
 .panel.active{display:block}
 
 /* ── CARDS ── */
-.card{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:14px}
-.ctitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:16px}
+.ctitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
 
 /* ── FORM ── */
-.field{margin-bottom:12px}
-.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-input[type=number],input[type=text],select{width:100%;padding:9px 13px;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-size:15px;font-weight:600;transition:border-color .15s;-moz-appearance:textfield}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+input[type=number],input[type=text],select{
+  width:100%;padding:11px 14px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:10px;color:var(--txt);font-size:15px;font-weight:600;
+  transition:border-color .15s,background .15s;-moz-appearance:textfield
+}
 input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
-input:focus,select:focus{outline:none;border-color:var(--accent);background:#1a2640}
-input.hl{border-color:#92400e!important;background:#1c1507!important}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input:focus,select:focus{outline:none;border-color:var(--accent);background:var(--surf3)}
+input.hl{border-left:3px solid var(--accent)}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .row2 .field{margin-bottom:0}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.row3 .field{margin-bottom:0}
-.hint{font-size:11px;color:var(--muted);margin-top:3px}
 
-/* ── CALC LAYOUT ── */
-.calc-grid{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+/* ── LAYOUT ── */
+.calc-grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
 
 /* ── STAT BOXES ── */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
-.stat{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:13px}
-.stat .sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
-.stat .sv{font-size:19px;font-weight:800;line-height:1.1}
-.stat .ss{font-size:11px;color:var(--muted);margin-top:2px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px}
+.stat .sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-weight:600}
+.stat .sv{font-size:20px;font-weight:800;line-height:1.1}
+.stat .ss{font-size:11px;color:var(--muted);margin-top:3px}
 
 /* ── RESULT TABLE ── */
-.rt{width:100%}
-.rt-hdr,.rt-row{display:grid;grid-template-columns:1fr 110px 110px 110px;gap:4px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.rt-hdr,.rt-row{display:grid;grid-template-columns:1fr 108px 108px 100px;gap:4px;padding:10px 0;border-bottom:1px solid var(--bdr)}
 .rt-row:last-child{border-bottom:none}
-.rt-hdr .c{font-size:10px;color:var(--muted);text-align:right;text-transform:uppercase;letter-spacing:.06em}
+.rt-hdr .c{font-size:10px;color:var(--muted);text-align:right;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
 .rt-hdr .c:first-child{text-align:left}
 .rt-row .c{font-size:13px;text-align:right;font-family:'SF Mono',Menlo,monospace;font-weight:600}
-.rt-row .c:first-child{text-align:left;font-family:inherit;font-weight:400;font-size:13px}
-.rt-row .c.indent{color:var(--muted);padding-left:14px}
-.sec-hdr{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:14px 0 6px;border-top:1px solid var(--bdr);display:flex;align-items:center;gap:5px}
+.rt-row .c:first-child{text-align:left;font-family:inherit;font-weight:400;font-size:13px;color:var(--txt)}
+.rt-row .c.indent{color:var(--muted);padding-left:14px;font-size:12px}
+.sec-hdr{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:16px 0 8px;border-top:1px solid var(--bdr)}
 .sec-hdr:first-child{border-top:none;padding-top:0}
-.cusd{color:#34d399}.caed{color:var(--indigo)}.cusdt{color:var(--orange)}.csunny{color:#fb923c}.cyours{color:var(--purple)}.cprofit{color:#34d399}.cred{color:var(--red)}.cblank{color:transparent}
+
+/* colors */
+.cusd{color:var(--green)}
+.caed{color:var(--sky)}
+.cusdt{color:var(--orange)}
+.csunny{color:var(--orange)}
+.cyours{color:var(--sky)}
+.cprofit{color:var(--green)}
+.cred{color:var(--red)}
+.cmuted{color:var(--muted)}
 
 /* ── PROFIT BANNER ── */
-.profit-banner{background:linear-gradient(135deg,#0d2318,#0f1f1a);border:1px solid #065f46;border-radius:12px;padding:20px;text-align:center;margin-top:14px}
-.pb-lbl{font-size:11px;color:#6ee7b7;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
-.pb-amt{font-size:38px;font-weight:900;color:#34d399;letter-spacing:-1px}
-.pb-sub{font-size:13px;color:#6ee7b7;margin-top:3px}
+.profit-banner{background:var(--surf2);border:1px solid var(--bdr);border-left:4px solid var(--green);border-radius:12px;padding:22px;text-align:center;margin-top:16px}
+.pb-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:600}
+.pb-amt{font-size:40px;font-weight:900;color:var(--green);letter-spacing:-1px}
+.pb-sub{font-size:13px;color:var(--muted);margin-top:4px}
 
 /* ── BUTTONS ── */
-.btn{padding:9px 18px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
-.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:#4f46e5}
+.btn{padding:10px 18px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:.9}
 .btn-g{background:transparent;border:1px solid var(--bdr);color:var(--txt)}.btn-g:hover{background:var(--surf2)}
-.btn-sm{padding:6px 13px;font-size:12px}
-.btn-danger{background:rgba(239,68,68,.12);border:1px solid var(--red);color:var(--red)}
-.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red)}.btn-danger:hover{background:rgba(248,113,113,.1)}
 
 /* ── TABLES ── */
 .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--bdr)}
 table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:var(--surf2);padding:9px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
-tbody td{padding:8px 10px;border-top:1px solid var(--bdr);vertical-align:middle}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-table input{padding:5px 8px;font-size:12px;border-radius:6px;min-width:70px}
-.del-btn{background:transparent;border:1px solid var(--bdr);color:var(--red);padding:3px 8px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1}
-.del-btn:hover{background:rgba(239,68,68,.1);border-color:var(--red)}
-.add-row{width:100%;background:transparent;border:1px dashed var(--bdr);color:var(--muted);padding:9px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:6px;transition:.15s}
+thead th{background:var(--surf2);padding:10px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+tbody td{padding:9px 10px;border-top:1px solid var(--bdr);vertical-align:middle}
+tbody tr:hover{background:var(--surf2)}
+table input{padding:6px 9px;font-size:12px;border-radius:7px;min-width:70px}
+.del-btn{background:transparent;border:1px solid var(--bdr);color:var(--red);padding:4px 9px;border-radius:6px;cursor:pointer;font-size:13px;line-height:1;transition:.15s}
+.del-btn:hover{border-color:var(--red);background:rgba(248,113,113,.08)}
+.add-row{width:100%;background:transparent;border:1px dashed var(--bdr);color:var(--muted);padding:10px;border-radius:10px;cursor:pointer;font-size:12px;margin-top:8px;transition:.15s;font-weight:500}
 .add-row:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ── TRACKER GRID ── */
-.tracker-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:14px}
+/* ── TRACKER ── */
+.tracker-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 
 /* ── DEAL CARDS ── */
-.deal-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.deal-card{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:8px;cursor:pointer;transition:.15s}
 .deal-card:hover{border-color:var(--accent)}
-.deal-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.deal-name{font-weight:700;font-size:14px}
-.deal-meta{font-size:11px;color:var(--muted);display:flex;gap:12px;align-items:center}
-.deal-pills{display:flex;gap:10px;flex-wrap:wrap}
-.deal-pill{font-size:11px;color:var(--muted)}
+.deal-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.deal-name{font-weight:700;font-size:14px;color:var(--txt)}
+.deal-pills{display:flex;gap:12px;flex-wrap:wrap}
+.deal-pill{font-size:12px;color:var(--muted)}
 .deal-pill strong{color:var(--txt)}
 
 /* ── MODAL ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:17px;font-weight:800;margin-bottom:18px}
-.sync-help{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:14px;padding:12px;background:var(--surf2);border-radius:8px;border:1px solid var(--bdr)}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:20px;color:var(--txt)}
+.sync-help{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px;padding:14px;background:var(--surf2);border-radius:10px;border:1px solid var(--bdr)}
 .sync-help a{color:var(--accent);text-decoration:none}
-.sync-help a:hover{text-decoration:underline}
 .sync-msg{font-size:12px;min-height:18px;margin-top:6px}
-hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
+hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
 
-/* ── PNL GRID ── */
-.pnl-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.pnl-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:12px}
+/* ── PNL ── */
+.pnl-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.pnl-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:12px}
 .pnl-row:last-child{border-bottom:none}
 .pnl-row .k{color:var(--muted)}
-.pnl-row .v{font-weight:700;font-family:'SF Mono',Menlo,monospace}
+.pnl-row .v{font-weight:700;font-family:'SF Mono',Menlo,monospace;font-size:13px}
 
 /* ── SAVE BAR ── */
-.save-bar{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)}
+.save-bar{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bdr)}
 .save-bar input{flex:1}
 
 /* ── RESPONSIVE ── */
@@ -169,28 +178,27 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
   .rt-row .c.col-usdt,.rt-hdr .c.col-usdt{display:none}
 }
 @media(max-width:540px){
-  header{padding:0 12px}.tabs-nav{padding:0 6px}.panel{padding:14px 10px}
+  header{padding:0 14px}.tabs-nav{padding:0 8px}.panel{padding:16px 12px}
   .stat-row{grid-template-columns:1fr 1fr}
-  .row2,.row3{grid-template-columns:1fr}
-  .row2 .field,.row3 .field{margin-bottom:10px}
-  .numpad{grid-template-columns:repeat(3,68px);gap:8px}
+  .row2{grid-template-columns:1fr}
+  .row2 .field{margin-bottom:12px}
+  .numpad{grid-template-columns:repeat(3,68px);gap:9px}
   .nk{width:68px;height:68px;font-size:20px}
   .modal{padding:18px}
+  .card{padding:16px}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════ PIN SCREEN ═══════════════════════════════ -->
+<!-- PIN SCREEN -->
 <div id="pinScreen">
   <div class="pin-logo">🔐</div>
   <div class="pin-title">USDT Deal Calculator</div>
   <div class="pin-sub">Enter PIN to unlock</div>
   <div class="pin-dots">
-    <div class="dot" id="d0"></div>
-    <div class="dot" id="d1"></div>
-    <div class="dot" id="d2"></div>
-    <div class="dot" id="d3"></div>
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
   </div>
   <div class="pin-err" id="pinErr"></div>
   <div class="numpad">
@@ -209,14 +217,14 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
   </div>
 </div>
 
-<!-- ═══════════════════════════════ APP ═══════════════════════════════════════ -->
+<!-- APP -->
 <div id="app">
   <header>
     <div class="logo">💱 <em>USDT</em> Calc</div>
     <div class="hdr-r">
       <div class="sync-pill" id="syncPill" onclick="openSettings()">⚡ Sync</div>
-      <button class="ico-btn" onclick="openSettings()" title="Settings">⚙️</button>
-      <button class="ico-btn" onclick="lockApp()" title="Lock">🔒</button>
+      <button class="ico-btn" onclick="openSettings()">⚙️</button>
+      <button class="ico-btn" onclick="lockApp()">🔒</button>
     </div>
   </header>
 
@@ -226,36 +234,35 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
     <button class="tb" onclick="goTab('deals',this)">📁 Saved Deals</button>
   </nav>
 
-  <!-- ─── DEAL CALCULATOR ─── -->
+  <!-- DEAL CALCULATOR -->
   <div class="panel active" id="panel-calc">
     <div class="calc-grid">
 
-      <!-- LEFT: inputs -->
+      <!-- Inputs -->
       <div>
         <div class="card">
           <div class="ctitle">📥 Deal Inputs</div>
-
           <div class="field">
             <label>Net USD Client Receives</label>
             <input type="number" id="netUSD" value="260380" class="hl" oninput="calc()">
           </div>
-          <div class="row2" style="margin-bottom:12px">
+          <div class="row2" style="margin-bottom:14px">
             <div class="field">
-              <label>USD / AED Rate (sell)</label>
+              <label>USD / AED Rate</label>
               <input type="number" id="usdAed" value="3.6725" step=".0001" class="hl" oninput="calc()">
             </div>
             <div class="field">
-              <label>USDT Buy Rate — Leo</label>
+              <label>USDT Buy Rate (Leo)</label>
               <input type="number" id="buyRate" value="3.644" step=".0001" class="hl" oninput="calc()">
             </div>
           </div>
           <div class="field">
-            <label>USDT Market Rate (AED/USDT)</label>
+            <label>USDT Market Rate</label>
             <input type="number" id="mktRate" value="3.67" step=".0001" class="hl" oninput="calc()">
           </div>
-          <div class="row2" style="margin-bottom:12px">
+          <div class="row2" style="margin-bottom:14px">
             <div class="field">
-              <label>Dealer Comm % — Sunny</label>
+              <label>Dealer Comm % (Sunny)</label>
               <input type="number" id="dealerPct" value="2" step=".1" class="hl" oninput="calc()">
             </div>
             <div class="field">
@@ -263,7 +270,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
               <input type="number" id="yourPct" value="1" step=".1" class="hl" oninput="calc()">
             </div>
           </div>
-          <div class="row2" style="margin-bottom:0">
+          <div class="row2">
             <div class="field">
               <label>Transfer Fees (USD)</label>
               <input type="number" id="fees" value="400" class="hl" oninput="calc()">
@@ -271,172 +278,161 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
             <div class="field">
               <label>Boss Split %</label>
               <input type="number" id="bossPct" value="50" step="1" class="hl" oninput="calc()">
-              <div class="hint">Boss share of net comm after fees</div>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="ctitle">💾 Save This Deal</div>
+          <div class="ctitle">💾 Save Deal</div>
           <div class="save-bar">
-            <input type="text" id="dealName" placeholder="e.g. Deal #3 — Client B, 200k">
+            <input type="text" id="dealName" placeholder="e.g. Deal #3 — Client B">
             <button class="btn btn-p btn-sm" onclick="saveDeal()">Save</button>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: results -->
+      <!-- Results -->
       <div>
-        <!-- Quick stats -->
         <div class="stat-row">
           <div class="stat">
             <div class="sl">USDT → Request Leo</div>
-            <div class="sv" id="qs-usdt" style="color:var(--orange)">—</div>
+            <div class="sv cusdt" id="qs-usdt">—</div>
             <div class="ss">Total USDT</div>
           </div>
           <div class="stat">
             <div class="sl">AED Pool</div>
-            <div class="sv" id="qs-aed" style="color:var(--indigo)">—</div>
+            <div class="sv caed" id="qs-aed">—</div>
             <div class="ss">Leo sends you</div>
           </div>
           <div class="stat">
             <div class="sl">Hand Sunny</div>
-            <div class="sv" id="qs-sunny" style="color:var(--orange)">—</div>
-            <div class="ss">Client net + 2%</div>
+            <div class="sv csunny" id="qs-sunny">—</div>
+            <div class="ss">Client + dealer comm</div>
           </div>
           <div class="stat">
             <div class="sl">Your Total Profit</div>
-            <div class="sv" id="qs-profit" style="color:#34d399">—</div>
+            <div class="sv cprofit" id="qs-profit">—</div>
             <div class="ss">Comm + spread</div>
           </div>
         </div>
 
-        <!-- Step by step -->
         <div class="card">
           <div class="sec-hdr">🔢 Step-by-Step</div>
-          <div class="rt">
-            <div class="rt-hdr">
-              <div class="c"></div>
-              <div class="c">USD</div>
-              <div class="c">AED</div>
-              <div class="c col-usdt">USDT</div>
-            </div>
-            <div class="rt-row">
-              <div class="c">① Net USD to client</div>
-              <div class="c cusd" id="s1u">—</div>
-              <div class="c caed" id="s1a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">② Dealer comm (Sunny)</div>
-              <div class="c csunny" id="s2u">—</div>
-              <div class="c caed" id="s2a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">③ Your commission</div>
-              <div class="c cyours" id="s3u">—</div>
-              <div class="c caed" id="s3a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row" style="background:rgba(99,102,241,.06);border-radius:7px">
-              <div class="c"><strong>④ Total needed</strong></div>
-              <div class="c cusd" id="s4u" style="font-size:14px">—</div>
-              <div class="c caed" id="s4a" style="font-size:14px">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row" style="background:rgba(245,158,11,.07);border-radius:7px">
-              <div class="c"><strong>⑤ USDT to receive from Leo</strong></div>
-              <div class="c cusd" id="s5u">—</div>
-              <div class="c caed" id="s5a">—</div>
-              <div class="c col-usdt cusdt" id="s5t" style="font-size:15px;font-weight:900">—</div>
-            </div>
+          <div class="rt-hdr">
+            <div class="c"></div>
+            <div class="c">USD</div>
+            <div class="c">AED</div>
+            <div class="c col-usdt">USDT</div>
+          </div>
+          <div class="rt-row">
+            <div class="c">① Net USD to client</div>
+            <div class="c cusd" id="s1u">—</div>
+            <div class="c caed" id="s1a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c indent">② Dealer comm (Sunny)</div>
+            <div class="c csunny" id="s2u">—</div>
+            <div class="c caed" id="s2a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c indent">③ Your commission</div>
+            <div class="c cyours" id="s3u">—</div>
+            <div class="c caed" id="s3a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row" style="background:var(--surf2);border-radius:8px;margin:2px 0">
+            <div class="c" style="font-weight:600">④ Total needed</div>
+            <div class="c cusd" id="s4u">—</div>
+            <div class="c caed" id="s4a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--orange);padding-left:8px">
+            <div class="c" style="font-weight:600">⑤ USDT from Leo</div>
+            <div class="c cusd" id="s5u">—</div>
+            <div class="c caed" id="s5a">—</div>
+            <div class="c col-usdt cusdt" id="s5t" style="font-size:15px;font-weight:900">—</div>
           </div>
         </div>
 
-        <!-- Money flow -->
         <div class="card">
           <div class="sec-hdr">💸 Money Flow</div>
-          <div class="rt">
-            <div class="rt-hdr">
-              <div class="c"></div>
-              <div class="c">USD</div>
-              <div class="c">AED</div>
-              <div class="c col-usdt">USDT</div>
-            </div>
-            <div class="rt-row">
-              <div class="c">🟡 Leo sends you</div>
-              <div class="c cblank">—</div>
-              <div class="c caed" id="mf1a">—</div>
-              <div class="c col-usdt cusdt" id="mf1t">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c">Send client (net)</div>
-              <div class="c cusd" id="mf2u">—</div>
-              <div class="c caed" id="mf2a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c">🟠 Hand Sunny (client + 2%)</div>
-              <div class="c csunny" id="mf3u">—</div>
-              <div class="c caed" id="mf3a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c">🟢 You keep (gross comm)</div>
-              <div class="c cyours" id="mf4u">—</div>
-              <div class="c caed" id="mf4a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
+          <div class="rt-hdr">
+            <div class="c"></div>
+            <div class="c">USD</div>
+            <div class="c">AED</div>
+            <div class="c col-usdt">USDT</div>
+          </div>
+          <div class="rt-row">
+            <div class="c">Leo sends you</div>
+            <div class="c cmuted">—</div>
+            <div class="c caed" id="mf1a">—</div>
+            <div class="c col-usdt cusdt" id="mf1t">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c">Send client (net)</div>
+            <div class="c cusd" id="mf2u">—</div>
+            <div class="c caed" id="mf2a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c">Hand Sunny (client + 2%)</div>
+            <div class="c csunny" id="mf3u">—</div>
+            <div class="c caed" id="mf3a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c">You keep (gross comm)</div>
+            <div class="c cyours" id="mf4u">—</div>
+            <div class="c caed" id="mf4a">—</div>
+            <div class="c col-usdt cmuted">—</div>
           </div>
         </div>
 
-        <!-- Profit breakdown -->
         <div class="card">
           <div class="sec-hdr">📈 Your Profit Breakdown</div>
-          <div class="rt">
-            <div class="rt-hdr">
-              <div class="c"></div>
-              <div class="c">USD</div>
-              <div class="c">AED</div>
-              <div class="c col-usdt"></div>
-            </div>
-            <div class="rt-row">
-              <div class="c">① Gross commission</div>
-              <div class="c cyours" id="p1u">—</div>
-              <div class="c caed" id="p1a">—</div>
-              <div class="c col-usdt" id="p1n" style="font-size:11px;color:var(--muted)"></div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">Less transfer fees</div>
-              <div class="c cred" id="p2u">—</div>
-              <div class="c cred" id="p2a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">Net after fees</div>
-              <div class="c cyours" id="p3u">—</div>
-              <div class="c caed" id="p3a">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">Boss takes <span id="bossLbl">50</span>%</div>
-              <div class="c" id="p4u" style="color:var(--muted)">—</div>
-              <div class="c" id="p4a" style="color:var(--muted)">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c"><strong>→ Your net commission</strong></div>
-              <div class="c cyours" id="p5u" style="font-size:14px">—</div>
-              <div class="c caed" id="p5a" style="font-size:14px">—</div>
-              <div class="c col-usdt cblank">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c">② Spread profit — 100% yours</div>
-              <div class="c cprofit" id="p6u">—</div>
-              <div class="c caed" id="p6a">—</div>
-              <div class="c col-usdt" id="p6pct" style="font-size:11px;color:var(--muted)"></div>
-            </div>
+          <div class="rt-hdr">
+            <div class="c"></div>
+            <div class="c">USD</div>
+            <div class="c">AED</div>
+            <div class="c col-usdt"></div>
+          </div>
+          <div class="rt-row">
+            <div class="c">① Gross commission</div>
+            <div class="c cyours" id="p1u">—</div>
+            <div class="c caed" id="p1a">—</div>
+            <div class="c col-usdt" id="p1n" style="font-size:11px;color:var(--muted)"></div>
+          </div>
+          <div class="rt-row">
+            <div class="c indent">Less transfer fees</div>
+            <div class="c cred" id="p2u">—</div>
+            <div class="c cred" id="p2a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c indent">Net after fees</div>
+            <div class="c cyours" id="p3u">—</div>
+            <div class="c caed" id="p3a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row">
+            <div class="c indent">Boss takes <span id="bossLbl">50</span>%</div>
+            <div class="c cmuted" id="p4u">—</div>
+            <div class="c cmuted" id="p4a">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--sky);padding-left:8px">
+            <div class="c" style="font-weight:600">→ Your net commission</div>
+            <div class="c cyours" id="p5u" style="font-size:14px">—</div>
+            <div class="c caed" id="p5a" style="font-size:14px">—</div>
+            <div class="c col-usdt cmuted">—</div>
+          </div>
+          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--green);padding-left:8px;margin-top:2px">
+            <div class="c" style="font-weight:600">② Spread — 100% yours</div>
+            <div class="c cprofit" id="p6u">—</div>
+            <div class="c caed" id="p6a">—</div>
+            <div class="c col-usdt" id="p6pct" style="font-size:11px;color:var(--muted)"></div>
           </div>
 
           <div class="profit-banner">
@@ -449,11 +445,10 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
     </div>
   </div>
 
-  <!-- ─── TRADING TRACKER ─── -->
+  <!-- TRADING TRACKER -->
   <div class="panel" id="panel-tracker">
-    <!-- Market rates -->
-    <div class="card" style="max-width:440px">
-      <div class="ctitle">📡 Current Rates (update daily)</div>
+    <div class="card" style="max-width:420px">
+      <div class="ctitle">📡 Current Rates</div>
       <div class="row2">
         <div class="field">
           <label>Market Rate (AED/USDT)</label>
@@ -466,19 +461,15 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
       </div>
     </div>
 
-    <!-- Position summary -->
     <div class="stat-row" id="tStatRow"></div>
 
-    <!-- Purchases + Sales -->
     <div class="tracker-cols">
       <div>
         <div class="card">
-          <div class="ctitle">📥 Purchases (Leo / Sunny)</div>
+          <div class="ctitle">📥 Purchases</div>
           <div class="tbl-wrap">
             <table>
-              <thead><tr>
-                <th>#</th><th>USDT</th><th>Buy Rate</th><th>Cost AED</th><th>Date</th><th>From</th><th></th>
-              </tr></thead>
+              <thead><tr><th>#</th><th>USDT</th><th>Buy Rate</th><th>Cost AED</th><th>Date</th><th>From</th><th></th></tr></thead>
               <tbody id="buyBody"></tbody>
             </table>
           </div>
@@ -490,9 +481,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
           <div class="ctitle">📤 Sales</div>
           <div class="tbl-wrap">
             <table>
-              <thead><tr>
-                <th>#</th><th>USDT</th><th>Sell Rate</th><th>Value AED</th><th>Date</th><th>Buyer</th><th></th>
-              </tr></thead>
+              <thead><tr><th>#</th><th>USDT</th><th>Sell Rate</th><th>Value AED</th><th>Date</th><th>Buyer</th><th></th></tr></thead>
               <tbody id="sellBody"></tbody>
             </table>
           </div>
@@ -501,38 +490,33 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
       </div>
     </div>
 
-    <!-- P&L -->
     <div class="card">
       <div class="ctitle">💰 P&amp;L Summary</div>
       <div class="pnl-cols" id="pnlCols"></div>
     </div>
   </div>
 
-  <!-- ─── SAVED DEALS ─── -->
+  <!-- SAVED DEALS -->
   <div class="panel" id="panel-deals">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
       <div style="font-size:18px;font-weight:800">📁 Saved Deals</div>
     </div>
     <div id="dealList">
-      <div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.<br>Calculate a deal and hit <strong>Save</strong> to keep it here.</div>
+      <div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.<br>Calculate a deal and hit <strong>Save</strong>.</div>
     </div>
   </div>
 </div>
 
-<!-- ─── SETTINGS MODAL ─── -->
+<!-- SETTINGS MODAL -->
 <div class="overlay" id="settingsOverlay" style="display:none" onclick="overlayClick(event)">
   <div class="modal">
     <div class="modal-title">⚙️ Settings</div>
 
-    <div class="ctitle">🔄 Cross-Device Sync — GitHub Gist (Free)</div>
+    <div class="ctitle">🔄 Cross-Device Sync — GitHub Gist</div>
     <div class="sync-help">
-      <strong>Setup in 3 minutes (free, no credit card):</strong><br>
-      1. Go to <a href="https://github.com" target="_blank">github.com</a> → Sign up or log in<br>
-      2. Click your avatar → <strong>Settings</strong> → <strong>Developer settings</strong> (bottom left) → <strong>Personal access tokens</strong> → <strong>Tokens (classic)</strong> → <strong>Generate new token (classic)</strong><br>
-      3. Give it any name, tick the <strong>gist</strong> checkbox, click <strong>Generate token</strong> → copy it<br>
-      4. Go to <a href="https://gist.github.com" target="_blank">gist.github.com</a> → New gist → Filename: <code>usdt.json</code> → Content: <code>{}</code> → <strong>Create secret gist</strong><br>
-      5. Copy the Gist ID from the URL (the long code after your username)<br>
-      6. Paste token + Gist ID below
+      <strong>Setup (3 min, free):</strong><br>
+      1. <a href="https://github.com" target="_blank">github.com</a> → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → tick <strong>gist</strong> → copy token<br>
+      2. <a href="https://gist.github.com" target="_blank">gist.github.com</a> → New gist → filename: <code>usdt.json</code> → content: <code>{}</code> → Create secret gist → copy the ID from the URL
     </div>
 
     <div class="field">
@@ -540,33 +524,31 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
       <input type="text" id="sMasterKey" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveSettings()">
     </div>
     <div class="field">
-      <label>Gist ID (from the URL)</label>
+      <label>Gist ID</label>
       <input type="text" id="sBinId" placeholder="abc123def456..." oninput="saveSettings()">
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">
       <button class="btn btn-p btn-sm" onclick="syncNow()">↻ Sync Now</button>
-      <button class="btn btn-g btn-sm" onclick="testConn()">🔌 Test Connection</button>
+      <button class="btn btn-g btn-sm" onclick="testConn()">🔌 Test</button>
     </div>
     <div class="sync-msg" id="syncMsg"></div>
 
     <hr class="div">
     <div class="ctitle">🔐 Change PIN</div>
-    <div class="row2" style="margin-bottom:8px">
-      <div class="field">
+    <div class="row2" style="margin-bottom:8px;align-items:end">
+      <div class="field" style="margin-bottom:0">
         <label>New 4-Digit PIN</label>
         <input type="number" id="newPin" placeholder="e.g. 1234">
       </div>
-      <div style="display:flex;align-items:flex-end;padding-bottom:0">
-        <button class="btn btn-g btn-sm" onclick="changePin()">Set PIN</button>
-      </div>
+      <button class="btn btn-g btn-sm" onclick="changePin()">Set PIN</button>
     </div>
 
     <hr class="div">
     <div class="ctitle">🗂️ Data</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-g btn-sm" onclick="exportJSON()">📤 Export JSON</button>
-      <button class="btn btn-g btn-sm" onclick="importJSON()">📥 Import JSON</button>
-      <button class="btn btn-sm btn-danger" onclick="clearAll()">🗑️ Clear All Data</button>
+      <button class="btn btn-g btn-sm" onclick="exportJSON()">📤 Export</button>
+      <button class="btn btn-g btn-sm" onclick="importJSON()">📥 Import</button>
+      <button class="btn btn-sm btn-danger" onclick="clearAll()">🗑️ Clear All</button>
     </div>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
 
@@ -576,623 +558,356 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:16px 0}
 </div>
 
 <script>
-// ══════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════
+// ── STATE ──
 let S = {
-  buys: [],
-  sells: [],
-  deals: [],
-  settings: { pin:'8888', masterKey:'', binId:'' },
-  calc: {},
-  tRates: {}
+  buys:[], sells:[], deals:[],
+  settings:{pin:'8888',masterKey:'',binId:''},
+  calc:{}, tRates:{}
 };
+let pinBuf='', syncTimer=null, debounceSave=null;
+const LS_KEY='usdt_v3';
 
-let pinBuf = '';
-let syncTimer = null;
-let debounceSave = null;
-
-// ══════════════════════════════════════════════════
-//  PIN / AUTH
-// ══════════════════════════════════════════════════
-function pk(k) {
-  if (k==='X') { pinBuf=''; }
-  else if (k==='B') { pinBuf=pinBuf.slice(0,-1); }
-  else if (pinBuf.length<4) { pinBuf+=k; }
+// ── PIN ──
+function pk(k){
+  if(k==='X'){pinBuf='';}
+  else if(k==='B'){pinBuf=pinBuf.slice(0,-1);}
+  else if(pinBuf.length<4){pinBuf+=k;}
   renderDots();
-  if (pinBuf.length===4) {
+  if(pinBuf.length===4){
     setTimeout(()=>{
-      const correct = S.settings?.pin || '8888';
-      if (pinBuf===correct) { unlock(); }
-      else {
+      if(pinBuf===(S.settings?.pin||'8888')){unlock();}
+      else{
         document.getElementById('pinErr').textContent='Incorrect PIN';
-        pinBuf=''; renderDots();
-        setTimeout(()=>{ document.getElementById('pinErr').textContent=''; },1500);
+        pinBuf='';renderDots();
+        setTimeout(()=>{document.getElementById('pinErr').textContent='';},1500);
       }
     },180);
   }
 }
+function renderDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('on',i<pinBuf.length);}
 
-function renderDots() {
-  for(let i=0;i<4;i++) {
-    document.getElementById('d'+i).classList.toggle('on',i<pinBuf.length);
-  }
-}
-
-function unlock() {
+function unlock(){
   document.getElementById('pinScreen').style.display='none';
   document.getElementById('app').style.display='block';
-  loadState();
-  calc();
-  calcTracker();
-  renderDeals();
-  document.getElementById('s-masterKey-val') // ignore
-  document.getElementById('sMasterKey').value = S.settings?.masterKey||'';
-  document.getElementById('sBinId').value = S.settings?.binId||'';
+  loadState(); calc(); calcTracker(); renderDeals();
+  document.getElementById('sMasterKey').value=S.settings?.masterKey||'';
+  document.getElementById('sBinId').value=S.settings?.binId||'';
   startSync();
 }
-
-function lockApp() {
-  pinBuf=''; renderDots();
+function lockApp(){
+  pinBuf='';renderDots();
   document.getElementById('pinScreen').style.display='flex';
   document.getElementById('app').style.display='none';
-  if(syncTimer) clearInterval(syncTimer);
+  if(syncTimer)clearInterval(syncTimer);
 }
 
 document.addEventListener('keydown',e=>{
   if(document.getElementById('pinScreen').style.display!=='none'){
-    if(e.key>='0'&&e.key<='9') pk(e.key);
-    if(e.key==='Backspace') pk('B');
-    if(e.key==='Escape') pk('X');
+    if(e.key>='0'&&e.key<='9')pk(e.key);
+    if(e.key==='Backspace')pk('B');
+    if(e.key==='Escape')pk('X');
   }
 });
 
-// ══════════════════════════════════════════════════
-//  PERSIST
-// ══════════════════════════════════════════════════
-const LS_KEY = 'usdt_v3';
-
-function loadState() {
-  try {
-    const d = localStorage.getItem(LS_KEY);
-    if(d) { const p=JSON.parse(d); S={...S,...p}; }
-  } catch(e){}
-
-  // If no tracker data, seed from Excel
-  if(!S.buys||S.buys.length===0) seedExcelData();
-
-  // Restore tracker inputs
-  if(S.tRates?.mktRate) document.getElementById('tMktRate').value=S.tRates.mktRate;
-  if(S.tRates?.usdAed)  document.getElementById('tUsdAed').value=S.tRates.usdAed;
-
-  // Restore calc inputs
+// ── PERSIST ──
+function loadState(){
+  try{const d=localStorage.getItem(LS_KEY);if(d){const p=JSON.parse(d);S={...S,...p};}}catch(e){}
+  if(!S.buys||S.buys.length===0)seedExcelData();
+  if(S.tRates?.mktRate)setVal('tMktRate',S.tRates.mktRate);
+  if(S.tRates?.usdAed)setVal('tUsdAed',S.tRates.usdAed);
   const c=S.calc||{};
-  if(c.netUSD!==undefined)   setVal('netUSD',c.netUSD);
-  if(c.usdAed!==undefined)   setVal('usdAed',c.usdAed);
-  if(c.buyRate!==undefined)  setVal('buyRate',c.buyRate);
-  if(c.mktRate!==undefined)  setVal('mktRate',c.mktRate);
-  if(c.dealerPct!==undefined) setVal('dealerPct',c.dealerPct);
-  if(c.yourPct!==undefined)  setVal('yourPct',c.yourPct);
-  if(c.fees!==undefined)     setVal('fees',c.fees);
-  if(c.bossPct!==undefined)  setVal('bossPct',c.bossPct);
-
-  renderBuys(); renderSells();
+  ['netUSD','usdAed','buyRate','mktRate','dealerPct','yourPct','fees','bossPct'].forEach(k=>{if(c[k]!==undefined)setVal(k,c[k]);});
+  renderBuys();renderSells();
 }
 
-function persist() {
-  S.calc = {
-    netUSD:n('netUSD'), usdAed:n('usdAed'), buyRate:n('buyRate'), mktRate:n('mktRate'),
-    dealerPct:n('dealerPct'), yourPct:n('yourPct'), fees:n('fees'), bossPct:n('bossPct')
-  };
-  S.tRates = { mktRate:n('tMktRate'), usdAed:n('tUsdAed') };
-  localStorage.setItem(LS_KEY, JSON.stringify(S));
-  // Debounce cloud push
-  if(debounceSave) clearTimeout(debounceSave);
-  debounceSave = setTimeout(pushCloud, 4000);
+function persist(){
+  S.calc={netUSD:n('netUSD'),usdAed:n('usdAed'),buyRate:n('buyRate'),mktRate:n('mktRate'),dealerPct:n('dealerPct'),yourPct:n('yourPct'),fees:n('fees'),bossPct:n('bossPct')};
+  S.tRates={mktRate:n('tMktRate'),usdAed:n('tUsdAed')};
+  localStorage.setItem(LS_KEY,JSON.stringify(S));
+  if(debounceSave)clearTimeout(debounceSave);
+  debounceSave=setTimeout(pushCloud,4000);
 }
 
-function setVal(id,v){ const el=document.getElementById(id); if(el) el.value=v; }
-function n(id){ return parseFloat(document.getElementById(id)?.value)||0; }
-function h(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function f(v,d=2){
-  if(v===null||v===undefined||isNaN(v)||!isFinite(v)) return '—';
-  return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
-}
-function s(id,v,d=2,pre=''){
-  const el=document.getElementById(id);
-  if(el) el.textContent = (isNaN(v)||!isFinite(v))?'—':pre+f(v,d);
-}
+function setVal(id,v){const el=document.getElementById(id);if(el)el.value=v;}
+function n(id){return parseFloat(document.getElementById(id)?.value)||0;}
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function f(v,d=2){if(v===null||v===undefined||isNaN(v)||!isFinite(v))return '—';return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function s(id,v,d=2){const el=document.getElementById(id);if(el)el.textContent=(isNaN(v)||!isFinite(v))?'—':f(v,d);}
 
-function seedExcelData() {
-  S.buys = [
-    {id:1, amt:314940, rate:3.65, date:'14/May/2026', notes:'LEO'},
-    {id:2, amt:17000,  rate:3.67, date:'20/May/2026', notes:'Sunny'},
-    {id:3, amt:16400,  rate:3.67, date:'22/May/2026', notes:'Sunny'},
-    {id:4, amt:270275, rate:3.65, date:'27/May/2026', notes:'LEO'},
+function seedExcelData(){
+  S.buys=[
+    {id:1,amt:314940,rate:3.65,date:'14/May/2026',notes:'LEO'},
+    {id:2,amt:17000,rate:3.67,date:'20/May/2026',notes:'Sunny'},
+    {id:3,amt:16400,rate:3.67,date:'22/May/2026',notes:'Sunny'},
+    {id:4,amt:270275,rate:3.65,date:'27/May/2026',notes:'LEO'},
   ];
-  S.sells = [
-    {id:101, amt:200000, rate:3.672, date:'14/May/2026', buyer:'faleel'},
-    {id:102, amt:60603,  rate:3.69,  date:'15/May/2026', buyer:'naveed'},
-    {id:103, amt:5000,   rate:3.69,  date:'16/May/2026', buyer:'naveed'},
-    {id:104, amt:3794,   rate:3.69,  date:'17/May/2026', buyer:'naveed'},
-    {id:105, amt:13500,  rate:3.69,  date:'17/May/2026', buyer:'naveed'},
-    {id:106, amt:13000,  rate:3.69,  date:'20/May/2026', buyer:'naveed'},
-    {id:107, amt:13300,  rate:3.69,  date:'21/May/2026', buyer:'naveed'},
-    {id:108, amt:2700,   rate:3.69,  date:'25/May/2026', buyer:'naveed'},
-    {id:109, amt:6493,   rate:3.69,  date:'26/May/2026', buyer:'naveed'},
+  S.sells=[
+    {id:101,amt:200000,rate:3.672,date:'14/May/2026',buyer:'faleel'},
+    {id:102,amt:60603,rate:3.69,date:'15/May/2026',buyer:'naveed'},
+    {id:103,amt:5000,rate:3.69,date:'16/May/2026',buyer:'naveed'},
+    {id:104,amt:3794,rate:3.69,date:'17/May/2026',buyer:'naveed'},
+    {id:105,amt:13500,rate:3.69,date:'17/May/2026',buyer:'naveed'},
+    {id:106,amt:13000,rate:3.69,date:'20/May/2026',buyer:'naveed'},
+    {id:107,amt:13300,rate:3.69,date:'21/May/2026',buyer:'naveed'},
+    {id:108,amt:2700,rate:3.69,date:'25/May/2026',buyer:'naveed'},
+    {id:109,amt:6493,rate:3.69,date:'26/May/2026',buyer:'naveed'},
   ];
-  S.deals = [
-    { id:1001, name:'Deal #1 — 303,620 USD', date:'2026-05-14T00:00:00.000Z',
-      inputs:{netUSD:303620,usdAed:3.67,buyRate:3.644,mktRate:3.67,dealerPct:2,yourPct:1,fees:0,bossPct:50},
-      profitUSD:3749.42, usdt:314959.92 },
-    { id:1002, name:'Deal #2 — 260,380 USD', date:'2026-05-27T00:00:00.000Z',
-      inputs:{netUSD:260380,usdAed:3.67,buyRate:3.642,mktRate:3.67,dealerPct:2,yourPct:1,fees:400,bossPct:50},
-      profitUSD:3163.78, usdt:270253.28 },
+  S.deals=[
+    {id:1001,name:'Deal #1 — 303,620 USD',date:'2026-05-14T00:00:00.000Z',inputs:{netUSD:303620,usdAed:3.67,buyRate:3.644,mktRate:3.67,dealerPct:2,yourPct:1,fees:0,bossPct:50},profitUSD:3749.42,usdt:314959.92},
+    {id:1002,name:'Deal #2 — 260,380 USD',date:'2026-05-27T00:00:00.000Z',inputs:{netUSD:260380,usdAed:3.67,buyRate:3.642,mktRate:3.67,dealerPct:2,yourPct:1,fees:400,bossPct:50},profitUSD:3163.78,usdt:270253.28},
   ];
 }
 
-// ══════════════════════════════════════════════════
-//  DEAL CALCULATOR
-// ══════════════════════════════════════════════════
-function calc() {
-  const netUSD   = n('netUSD');
-  const usdAed   = n('usdAed');
-  const dPct     = n('dealerPct')/100;
-  const yPct     = n('yourPct')/100;
-  const buyRate  = n('buyRate');
-  const mktRate  = n('mktRate');
-  const fees     = n('fees');
-  const bossPct  = n('bossPct')/100;
+// ── CALCULATOR ──
+function calc(){
+  const netUSD=n('netUSD'),usdAed=n('usdAed'),dPct=n('dealerPct')/100,yPct=n('yourPct')/100;
+  const buyRate=n('buyRate'),mktRate=n('mktRate'),fees=n('fees'),bossPct=n('bossPct')/100;
+  if(!netUSD||!usdAed||!buyRate){persist();return;}
+  const netAED=netUSD*usdAed,dUSD=netUSD*dPct,dAED=dUSD*usdAed,yUSD=netUSD*yPct,yAED=yUSD*usdAed;
+  const totUSD=netUSD+dUSD+yUSD,totAED=totUSD*usdAed,usdt=totAED/buyRate;
+  const sunnyUSD=netUSD+dUSD,sunnyAED=sunnyUSD*usdAed;
+  const feesAED=fees*usdAed,netComm=yUSD-fees,netCommAED=yAED-feesAED;
+  const bossUSD=netComm*bossPct,bossAED=netCommAED*bossPct;
+  const myNetUSD=netComm-bossUSD,myNetAED=netCommAED-bossAED;
+  const spreadR=mktRate-buyRate,spreadAED=spreadR*usdt,spreadUSD=spreadAED/usdAed;
+  const spreadPct=buyRate>0?spreadR/buyRate*100:0;
+  const totalPUSD=myNetUSD+spreadUSD,totalPAED=myNetAED+spreadAED;
 
-  if(!netUSD||!usdAed||!buyRate) { persist(); return; }
-
-  // Steps
-  const netAED      = netUSD * usdAed;
-  const dUSD        = netUSD * dPct;
-  const dAED        = dUSD * usdAed;
-  const yUSD        = netUSD * yPct;
-  const yAED        = yUSD * usdAed;
-  const totUSD      = netUSD + dUSD + yUSD;
-  const totAED      = totUSD * usdAed;
-  const usdt        = totAED / buyRate;
-
-  // Money flow
-  const sunnyUSD    = netUSD + dUSD;
-  const sunnyAED    = sunnyUSD * usdAed;
-
-  // Profit
-  const feesAED     = fees * usdAed;
-  const netComm     = yUSD - fees;
-  const netCommAED  = yAED - feesAED;
-  const bossUSD     = netComm * bossPct;
-  const bossAED     = netCommAED * bossPct;
-  const myNetUSD    = netComm - bossUSD;
-  const myNetAED    = netCommAED - bossAED;
-
-  const spreadR     = mktRate - buyRate;
-  const spreadAED   = spreadR * usdt;
-  const spreadUSD   = spreadAED / usdAed;
-  const spreadPct   = buyRate>0 ? spreadR/buyRate*100 : 0;
-
-  const totalPUSD   = myNetUSD + spreadUSD;
-  const totalPAED   = myNetAED + spreadAED;
-
-  // ── Update DOM ──
-  s('s1u',netUSD); s('s1a',netAED);
-  s('s2u',dUSD);   s('s2a',dAED);
-  s('s3u',yUSD);   s('s3a',yAED);
-  s('s4u',totUSD); s('s4a',totAED);
-  s('s5u',totUSD); s('s5a',totAED); s('s5t',usdt,2);
-
-  s('mf1a',totAED); s('mf1t',usdt,2);
-  s('mf2u',netUSD); s('mf2a',netAED);
-  s('mf3u',sunnyUSD); s('mf3a',sunnyAED);
-  s('mf4u',yUSD); s('mf4a',yAED);
-
-  s('p1u',yUSD); s('p1a',yAED);
-  document.getElementById('p1n').textContent = netUSD>0?`${f(n('yourPct'),1)}% of ${f(netUSD,0)}`:'';
-  s('p2u',-fees); s('p2a',-feesAED);
-  s('p3u',netComm); s('p3a',netCommAED);
-  s('p4u',bossUSD); s('p4a',bossAED);
-  s('p5u',myNetUSD); s('p5a',myNetAED);
-  s('p6u',spreadUSD); s('p6a',spreadAED);
-  document.getElementById('p6pct').textContent = spreadPct.toFixed(2)+'% spread';
-  document.getElementById('bossLbl').textContent = Math.round(n('bossPct'));
-
-  document.getElementById('totalProfitUSD').textContent = '$'+f(totalPUSD);
-  document.getElementById('totalProfitAED').textContent = f(totalPAED)+' AED';
-
-  document.getElementById('qs-usdt').textContent = f(usdt,0)+' USDT';
-  document.getElementById('qs-aed').textContent  = f(totAED,0)+' AED';
-  document.getElementById('qs-sunny').textContent= '$'+f(sunnyUSD,0);
+  s('s1u',netUSD);s('s1a',netAED);s('s2u',dUSD);s('s2a',dAED);s('s3u',yUSD);s('s3a',yAED);
+  s('s4u',totUSD);s('s4a',totAED);s('s5u',totUSD);s('s5a',totAED);s('s5t',usdt,2);
+  s('mf1a',totAED);s('mf1t',usdt,2);s('mf2u',netUSD);s('mf2a',netAED);
+  s('mf3u',sunnyUSD);s('mf3a',sunnyAED);s('mf4u',yUSD);s('mf4a',yAED);
+  s('p1u',yUSD);s('p1a',yAED);
+  document.getElementById('p1n').textContent=netUSD>0?`${f(n('yourPct'),1)}% of ${f(netUSD,0)}`:'';
+  s('p2u',-fees);s('p2a',-feesAED);s('p3u',netComm);s('p3a',netCommAED);
+  s('p4u',bossUSD);s('p4a',bossAED);s('p5u',myNetUSD);s('p5a',myNetAED);
+  s('p6u',spreadUSD);s('p6a',spreadAED);
+  document.getElementById('p6pct').textContent=spreadPct.toFixed(2)+'% spread';
+  document.getElementById('bossLbl').textContent=Math.round(n('bossPct'));
+  document.getElementById('totalProfitUSD').textContent='$'+f(totalPUSD);
+  document.getElementById('totalProfitAED').textContent=f(totalPAED)+' AED';
+  document.getElementById('qs-usdt').textContent=f(usdt,0)+' USDT';
+  document.getElementById('qs-aed').textContent=f(totAED,0)+' AED';
+  document.getElementById('qs-sunny').textContent='$'+f(sunnyUSD,0);
   document.getElementById('qs-profit').textContent='$'+f(totalPUSD);
-
   persist();
 }
 
-// ══════════════════════════════════════════════════
-//  SAVE / LOAD DEALS
-// ══════════════════════════════════════════════════
-function saveDeal() {
-  const name = document.getElementById('dealName').value.trim() || `Deal — ${new Date().toLocaleDateString()}`;
-  const inputs = {
-    netUSD:n('netUSD'), usdAed:n('usdAed'), buyRate:n('buyRate'), mktRate:n('mktRate'),
-    dealerPct:n('dealerPct'), yourPct:n('yourPct'), fees:n('fees'), bossPct:n('bossPct')
-  };
-  // Quick profit calc for display
-  const i=inputs;
-  const totAED = i.netUSD*(1+i.dealerPct/100+i.yourPct/100)*i.usdAed;
-  const usdt = totAED/i.buyRate;
-  const yUSD = i.netUSD*i.yourPct/100;
-  const myNet = (yUSD-i.fees)*(1-i.bossPct/100);
-  const spread = (i.mktRate-i.buyRate)*usdt/i.usdAed;
-  const prof = myNet+spread;
-
-  if(!S.deals) S.deals=[];
-  S.deals.unshift({ id:Date.now(), name, date:new Date().toISOString(), inputs, profitUSD:prof, usdt });
-  persist();
-  renderDeals();
-  document.getElementById('dealName').value='';
-  goTab('deals', document.querySelectorAll('.tb')[2]);
+// ── DEALS ──
+function saveDeal(){
+  const name=document.getElementById('dealName').value.trim()||`Deal — ${new Date().toLocaleDateString()}`;
+  const inputs={netUSD:n('netUSD'),usdAed:n('usdAed'),buyRate:n('buyRate'),mktRate:n('mktRate'),dealerPct:n('dealerPct'),yourPct:n('yourPct'),fees:n('fees'),bossPct:n('bossPct')};
+  const i=inputs,totAED=i.netUSD*(1+i.dealerPct/100+i.yourPct/100)*i.usdAed,usdt=totAED/i.buyRate;
+  const myNet=(i.netUSD*i.yourPct/100-i.fees)*(1-i.bossPct/100),spread=(i.mktRate-i.buyRate)*usdt/i.usdAed;
+  if(!S.deals)S.deals=[];
+  S.deals.unshift({id:Date.now(),name,date:new Date().toISOString(),inputs,profitUSD:myNet+spread,usdt});
+  persist();renderDeals();document.getElementById('dealName').value='';
+  goTab('deals',document.querySelectorAll('.tb')[2]);
 }
 
-function renderDeals() {
+function renderDeals(){
   const c=document.getElementById('dealList');
-  if(!S.deals||!S.deals.length){
-    c.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.<br>Calculate a deal and hit <strong>Save</strong>.</div>';
-    return;
-  }
+  if(!S.deals||!S.deals.length){c.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.</div>';return;}
   c.innerHTML=S.deals.map(d=>`
     <div class="deal-card" onclick="loadDeal(${d.id})">
       <div class="deal-card-top">
         <div class="deal-name">${h(d.name)}</div>
-        <div class="deal-meta">
-          <span>${new Date(d.date).toLocaleDateString()}</span>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span style="font-size:11px;color:var(--muted)">${new Date(d.date).toLocaleDateString()}</span>
           <button onclick="event.stopPropagation();deleteDeal(${d.id})" style="background:transparent;border:none;color:var(--red);cursor:pointer;font-size:18px;line-height:1">×</button>
         </div>
       </div>
       <div class="deal-pills">
         <div class="deal-pill"><span>Client: </span><strong>$${f(d.inputs.netUSD,0)}</strong></div>
         <div class="deal-pill"><span>USDT: </span><strong>${f(d.usdt,0)}</strong></div>
-        <div class="deal-pill"><span>Buy: </span><strong>${d.inputs.buyRate}</strong></div>
-        <div class="deal-pill"><span>Sell rate: </span><strong>${d.inputs.usdAed}</strong></div>
-        <div class="deal-pill"><span>Your profit: </span><strong style="color:var(--green)">$${f(d.profitUSD)}</strong></div>
+        <div class="deal-pill"><span>Buy rate: </span><strong>${d.inputs.buyRate}</strong></div>
+        <div class="deal-pill"><span>Profit: </span><strong style="color:var(--green)">$${f(d.profitUSD)}</strong></div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function loadDeal(id) {
-  const d=S.deals.find(x=>x.id==id); if(!d) return;
+function loadDeal(id){
+  const d=S.deals.find(x=>x.id==id);if(!d)return;
   const i=d.inputs;
-  setVal('netUSD',i.netUSD); setVal('usdAed',i.usdAed); setVal('buyRate',i.buyRate);
-  setVal('mktRate',i.mktRate); setVal('dealerPct',i.dealerPct); setVal('yourPct',i.yourPct);
-  setVal('fees',i.fees); setVal('bossPct',i.bossPct);
+  ['netUSD','usdAed','buyRate','mktRate','dealerPct','yourPct','fees','bossPct'].forEach(k=>setVal(k,i[k]));
   document.getElementById('dealName').value=d.name;
-  calc();
-  goTab('calc', document.querySelectorAll('.tb')[0]);
+  calc();goTab('calc',document.querySelectorAll('.tb')[0]);
 }
+function deleteDeal(id){if(!confirm('Delete?'))return;S.deals=S.deals.filter(x=>x.id!=id);persist();renderDeals();}
 
-function deleteDeal(id) {
-  if(!confirm('Delete this deal?')) return;
-  S.deals=S.deals.filter(x=>x.id!=id);
-  persist(); renderDeals();
+// ── TRACKER ──
+function addBuy(){if(!S.buys)S.buys=[];S.buys.push({id:Date.now(),amt:0,rate:3.65,date:'',notes:''});renderBuys();calcTracker();}
+function addSell(){if(!S.sells)S.sells=[];S.sells.push({id:Date.now(),amt:0,rate:3.68,date:'',buyer:''});renderSells();calcTracker();}
+
+function renderBuys(){
+  const b=document.getElementById('buyBody');if(!b)return;if(!S.buys)S.buys=[];
+  b.innerHTML=S.buys.map((p,i)=>`<tr>
+    <td style="color:var(--muted)">${i+1}</td>
+    <td><input type="number" value="${p.amt}" onchange="updBuy(${p.id},'amt',this.value)" style="min-width:80px"></td>
+    <td><input type="number" value="${p.rate}" step=".0001" onchange="updBuy(${p.id},'rate',this.value)" style="min-width:65px"></td>
+    <td style="color:var(--sky);font-weight:700;white-space:nowrap">${f(p.amt*p.rate,0)}</td>
+    <td><input type="text" value="${h(p.date)}" onchange="updBuy(${p.id},'date',this.value)" style="min-width:85px" placeholder="DD/Mon/YY"></td>
+    <td><input type="text" value="${h(p.notes)}" onchange="updBuy(${p.id},'notes',this.value)" style="min-width:60px" placeholder="LEO..."></td>
+    <td><button class="del-btn" onclick="delBuy(${p.id})">×</button></td>
+  </tr>`).join('');
 }
-
-// ══════════════════════════════════════════════════
-//  TRADING TRACKER
-// ══════════════════════════════════════════════════
-function addBuy(b=null) {
-  if(!S.buys) S.buys=[];
-  S.buys.push(b||{id:Date.now(),amt:0,rate:3.65,date:'',notes:''});
-  renderBuys(); calcTracker();
+function renderSells(){
+  const b=document.getElementById('sellBody');if(!b)return;if(!S.sells)S.sells=[];
+  b.innerHTML=S.sells.map((p,i)=>`<tr>
+    <td style="color:var(--muted)">${i+1}</td>
+    <td><input type="number" value="${p.amt}" onchange="updSell(${p.id},'amt',this.value)" style="min-width:80px"></td>
+    <td><input type="number" value="${p.rate}" step=".0001" onchange="updSell(${p.id},'rate',this.value)" style="min-width:65px"></td>
+    <td style="color:var(--green);font-weight:700;white-space:nowrap">${f(p.amt*p.rate,0)}</td>
+    <td><input type="text" value="${h(p.date)}" onchange="updSell(${p.id},'date',this.value)" style="min-width:85px" placeholder="DD/Mon/YY"></td>
+    <td><input type="text" value="${h(p.buyer)}" onchange="updSell(${p.id},'buyer',this.value)" style="min-width:60px" placeholder="name..."></td>
+    <td><button class="del-btn" onclick="delSell(${p.id})">×</button></td>
+  </tr>`).join('');
 }
-function addSell(s=null) {
-  if(!S.sells) S.sells=[];
-  S.sells.push(s||{id:Date.now(),amt:0,rate:3.68,date:'',buyer:''});
-  renderSells(); calcTracker();
-}
+function updBuy(id,f2,v){const p=S.buys.find(x=>x.id==id);if(p){p[f2]=(f2==='amt'||f2==='rate')?parseFloat(v)||0:v;renderBuys();calcTracker();persist();}}
+function updSell(id,f2,v){const p=S.sells.find(x=>x.id==id);if(p){p[f2]=(f2==='amt'||f2==='rate')?parseFloat(v)||0:v;renderSells();calcTracker();persist();}}
+function delBuy(id){S.buys=S.buys.filter(x=>x.id!=id);renderBuys();calcTracker();persist();}
+function delSell(id){S.sells=S.sells.filter(x=>x.id!=id);renderSells();calcTracker();persist();}
 
-function renderBuys() {
-  const body=document.getElementById('buyBody'); if(!body) return;
-  if(!S.buys) S.buys=[];
-  body.innerHTML=S.buys.map((b,i)=>`
-    <tr>
-      <td style="color:var(--muted)">${i+1}</td>
-      <td><input type="number" value="${b.amt}" onchange="updBuy(${b.id},'amt',this.value)" style="min-width:80px"></td>
-      <td><input type="number" value="${b.rate}" step=".0001" onchange="updBuy(${b.id},'rate',this.value)" style="min-width:65px"></td>
-      <td style="color:var(--indigo);font-weight:700;white-space:nowrap">${f(b.amt*b.rate,0)}</td>
-      <td><input type="text" value="${h(b.date)}" onchange="updBuy(${b.id},'date',this.value)" style="min-width:85px" placeholder="DD/Mon/YY"></td>
-      <td><input type="text" value="${h(b.notes)}" onchange="updBuy(${b.id},'notes',this.value)" style="min-width:60px" placeholder="LEO..."></td>
-      <td><button class="del-btn" onclick="delBuy(${b.id})">×</button></td>
-    </tr>`).join('');
-}
-function renderSells() {
-  const body=document.getElementById('sellBody'); if(!body) return;
-  if(!S.sells) S.sells=[];
-  body.innerHTML=S.sells.map((s,i)=>`
-    <tr>
-      <td style="color:var(--muted)">${i+1}</td>
-      <td><input type="number" value="${s.amt}" onchange="updSell(${s.id},'amt',this.value)" style="min-width:80px"></td>
-      <td><input type="number" value="${s.rate}" step=".0001" onchange="updSell(${s.id},'rate',this.value)" style="min-width:65px"></td>
-      <td style="color:var(--green);font-weight:700;white-space:nowrap">${f(s.amt*s.rate,0)}</td>
-      <td><input type="text" value="${h(s.date)}" onchange="updSell(${s.id},'date',this.value)" style="min-width:85px" placeholder="DD/Mon/YY"></td>
-      <td><input type="text" value="${h(s.buyer)}" onchange="updSell(${s.id},'buyer',this.value)" style="min-width:60px" placeholder="name..."></td>
-      <td><button class="del-btn" onclick="delSell(${s.id})">×</button></td>
-    </tr>`).join('');
-}
+function calcTracker(){
+  const buys=S.buys||[],sells=S.sells||[];
+  const mkt=n('tMktRate')||3.68,ua=n('tUsdAed')||3.6725;
+  const totB=buys.reduce((a,b)=>a+(b.amt||0),0),totS=sells.reduce((a,s)=>a+(s.amt||0),0),rem=totB-totS;
+  const totCA=buys.reduce((a,b)=>a+(b.amt*b.rate),0),avgB=totB>0?totCA/totB:0;
+  const totRA=sells.reduce((a,s)=>a+(s.amt*s.rate),0),avgS=totS>0?totRA/totS:0;
+  const costS=avgB*totS,rPA=totRA-costS,rPU=rPA/ua,rM=totRA>0?rPA/totRA*100:0;
+  const mktV=rem*mkt,costR=avgB*rem,uPA=mktV-costR,uPU=uPA/ua;
+  const tPA=rPA+uPA,tPU=rPU+uPU;
 
-function updBuy(id,field,val) {
-  const b=S.buys.find(x=>x.id==id); if(!b) return;
-  b[field]=(field==='amt'||field==='rate')?parseFloat(val)||0:val;
-  renderBuys(); calcTracker(); persist();
-}
-function updSell(id,field,val) {
-  const s=S.sells.find(x=>x.id==id); if(!s) return;
-  s[field]=(field==='amt'||field==='rate')?parseFloat(val)||0:val;
-  renderSells(); calcTracker(); persist();
-}
-function delBuy(id){ S.buys=S.buys.filter(x=>x.id!=id); renderBuys(); calcTracker(); persist(); }
-function delSell(id){ S.sells=S.sells.filter(x=>x.id!=id); renderSells(); calcTracker(); persist(); }
+  const sr=document.getElementById('tStatRow');
+  if(sr)sr.innerHTML=`
+    <div class="stat"><div class="sl">USDT Purchased</div><div class="sv cusdt">${f(totB,0)}</div><div class="ss">Avg buy: ${avgB.toFixed(4)}</div></div>
+    <div class="stat"><div class="sl">USDT Sold</div><div class="sv cusd">${f(totS,0)}</div><div class="ss">Avg sell: ${avgS.toFixed(4)}</div></div>
+    <div class="stat"><div class="sl">USDT in Hand</div><div class="sv caed">${f(rem,0)}</div><div class="ss">Value: ${f(mktV,0)} AED</div></div>
+    <div class="stat"><div class="sl">Realised Profit</div><div class="sv" style="color:${rPU>=0?'var(--green)':'var(--red)'}">$${f(rPU)}</div><div class="ss">${f(rPA)} AED (${rM.toFixed(2)}%)</div></div>
+    <div class="stat"><div class="sl">Unrealised Profit</div><div class="sv" style="color:${uPU>=0?'var(--green)':'var(--red)'}">$${f(uPU)}</div><div class="ss">${f(uPA)} AED</div></div>
+    <div class="stat" style="border-color:${tPU>=0?'var(--green)':'var(--red)'}"><div class="sl">💰 Total P&L</div><div class="sv" style="color:${tPU>=0?'var(--green)':'var(--red)'};font-size:22px">$${f(tPU)}</div><div class="ss">${f(tPA)} AED</div></div>`;
 
-function calcTracker() {
-  const buys  = S.buys  || [];
-  const sells = S.sells || [];
-  const mkt   = n('tMktRate') || 3.68;
-  const ua    = n('tUsdAed')  || 3.6725;
-
-  const totBoughtUSDT = buys.reduce((a,b)=>a+(b.amt||0),0);
-  const totSoldUSDT   = sells.reduce((a,s)=>a+(s.amt||0),0);
-  const remaining     = totBoughtUSDT - totSoldUSDT;
-
-  const totCostAED    = buys.reduce((a,b)=>a+(b.amt*b.rate),0);
-  const avgBuy        = totBoughtUSDT>0 ? totCostAED/totBoughtUSDT : 0;
-
-  const totRevAED     = sells.reduce((a,s)=>a+(s.amt*s.rate),0);
-  const avgSell       = totSoldUSDT>0 ? totRevAED/totSoldUSDT : 0;
-
-  // Realised P&L
-  const costOfSold    = avgBuy * totSoldUSDT;
-  const realProfAED   = totRevAED - costOfSold;
-  const realProfUSD   = realProfAED / ua;
-  const realMargin    = totRevAED>0 ? realProfAED/totRevAED*100 : 0;
-
-  // Unrealised P&L
-  const mktValAED     = remaining * mkt;
-  const costRem       = avgBuy * remaining;
-  const unrProfAED    = mktValAED - costRem;
-  const unrProfUSD    = unrProfAED / ua;
-
-  const totProfAED    = realProfAED + unrProfAED;
-  const totProfUSD    = realProfUSD + unrProfUSD;
-
-  // Stat boxes
-  const statRow = document.getElementById('tStatRow');
-  if(statRow) statRow.innerHTML=`
-    <div class="stat">
-      <div class="sl">USDT Purchased</div>
-      <div class="sv" style="color:var(--orange)">${f(totBoughtUSDT,0)}</div>
-      <div class="ss">Avg buy: ${avgBuy.toFixed(4)}</div>
-    </div>
-    <div class="stat">
-      <div class="sl">USDT Sold</div>
-      <div class="sv" style="color:var(--green)">${f(totSoldUSDT,0)}</div>
-      <div class="ss">Avg sell: ${avgSell.toFixed(4)}</div>
-    </div>
-    <div class="stat">
-      <div class="sl">USDT in Hand</div>
-      <div class="sv" style="color:var(--indigo)">${f(remaining,0)}</div>
-      <div class="ss">Value: ${f(mktValAED,0)} AED</div>
-    </div>
-    <div class="stat">
-      <div class="sl">Realised Profit</div>
-      <div class="sv" style="color:${realProfUSD>=0?'var(--green)':'var(--red)'}">$${f(realProfUSD)}</div>
-      <div class="ss">${f(realProfAED)} AED (${realMargin.toFixed(2)}%)</div>
-    </div>
-    <div class="stat">
-      <div class="sl">Unrealised Profit</div>
-      <div class="sv" style="color:${unrProfUSD>=0?'var(--green)':'var(--red)'}">$${f(unrProfUSD)}</div>
-      <div class="ss">${f(unrProfAED)} AED</div>
-    </div>
-    <div class="stat" style="border-color:${totProfUSD>=0?'#065f46':'#7f1d1d'};background:${totProfUSD>=0?'rgba(16,185,129,.07)':'rgba(239,68,68,.07)'}">
-      <div class="sl">💰 Total P&amp;L</div>
-      <div class="sv" style="color:${totProfUSD>=0?'var(--green)':'var(--red)'};font-size:24px">$${f(totProfUSD)}</div>
-      <div class="ss">${f(totProfAED)} AED</div>
-    </div>
-  `;
-
-  // P&L cols
-  const pnl = document.getElementById('pnlCols');
-  if(pnl) pnl.innerHTML=`
+  const pc=document.getElementById('pnlCols');
+  if(pc)pc.innerHTML=`
     <div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">📥 Purchase Summary</div>
-      <div class="pnl-row"><span class="k">Total USDT bought</span><span class="v" style="color:var(--orange)">${f(totBoughtUSDT,0)}</span></div>
-      <div class="pnl-row"><span class="k">Total cost (AED)</span><span class="v" style="color:var(--indigo)">${f(totCostAED,0)}</span></div>
-      <div class="pnl-row"><span class="k">Avg buy rate</span><span class="v">${avgBuy.toFixed(4)}</span></div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📥 Purchases</div>
+      <div class="pnl-row"><span class="k">Total USDT</span><span class="v cusdt">${f(totB,0)}</span></div>
+      <div class="pnl-row"><span class="k">Total cost (AED)</span><span class="v caed">${f(totCA,0)}</span></div>
+      <div class="pnl-row"><span class="k">Avg buy rate</span><span class="v">${avgB.toFixed(4)}</span></div>
     </div>
     <div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">📤 Sales Summary</div>
-      <div class="pnl-row"><span class="k">Total USDT sold</span><span class="v" style="color:var(--green)">${f(totSoldUSDT,0)}</span></div>
-      <div class="pnl-row"><span class="k">Total revenue (AED)</span><span class="v" style="color:var(--green)">${f(totRevAED,0)}</span></div>
-      <div class="pnl-row"><span class="k">Avg sell rate</span><span class="v">${avgSell.toFixed(4)}</span></div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📤 Sales</div>
+      <div class="pnl-row"><span class="k">Total USDT sold</span><span class="v cusd">${f(totS,0)}</span></div>
+      <div class="pnl-row"><span class="k">Total revenue (AED)</span><span class="v cprofit">${f(totRA,0)}</span></div>
+      <div class="pnl-row"><span class="k">Avg sell rate</span><span class="v">${avgS.toFixed(4)}</span></div>
     </div>
     <div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">📈 P&amp;L Breakdown</div>
-      <div class="pnl-row"><span class="k">Realised (AED)</span><span class="v" style="color:${realProfAED>=0?'var(--green)':'var(--red)'}">${f(realProfAED)}</span></div>
-      <div class="pnl-row"><span class="k">Unrealised (AED)</span><span class="v" style="color:${unrProfAED>=0?'var(--green)':'var(--red)'}">${f(unrProfAED)}</span></div>
-      <div class="pnl-row"><span class="k"><strong>Total (USD)</strong></span><span class="v" style="color:${totProfUSD>=0?'var(--green)':'var(--red)'};font-size:16px">$${f(totProfUSD)}</span></div>
-    </div>
-  `;
-
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📈 P&L</div>
+      <div class="pnl-row"><span class="k">Realised (AED)</span><span class="v" style="color:${rPA>=0?'var(--green)':'var(--red)'}">${f(rPA)}</span></div>
+      <div class="pnl-row"><span class="k">Unrealised (AED)</span><span class="v" style="color:${uPA>=0?'var(--green)':'var(--red)'}">${f(uPA)}</span></div>
+      <div class="pnl-row"><span class="k"><strong>Total (USD)</strong></span><span class="v" style="color:${tPU>=0?'var(--green)':'var(--red)'};font-size:15px">$${f(tPU)}</span></div>
+    </div>`;
   persist();
 }
 
-// ══════════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════════
-function goTab(id, btn) {
+// ── TABS ──
+function goTab(id,btn){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panel = document.getElementById('panel-'+id);
-  if(panel) panel.classList.add('active');
-  if(btn) btn.classList.add('active');
+  document.getElementById('panel-'+id)?.classList.add('active');
+  if(btn)btn.classList.add('active');
 }
 
-// ══════════════════════════════════════════════════
-//  SETTINGS
-// ══════════════════════════════════════════════════
-function openSettings() { document.getElementById('settingsOverlay').style.display='flex'; }
-function closeSettings() { document.getElementById('settingsOverlay').style.display='none'; }
-function overlayClick(e) { if(e.target===document.getElementById('settingsOverlay')) closeSettings(); }
-
-function saveSettings() {
-  S.settings = S.settings||{};
-  S.settings.masterKey = document.getElementById('sMasterKey').value.trim();
-  S.settings.binId     = document.getElementById('sBinId').value.trim();
-  localStorage.setItem(LS_KEY, JSON.stringify(S));
+// ── SETTINGS ──
+function openSettings(){document.getElementById('settingsOverlay').style.display='flex';}
+function closeSettings(){document.getElementById('settingsOverlay').style.display='none';}
+function overlayClick(e){if(e.target===document.getElementById('settingsOverlay'))closeSettings();}
+function saveSettings(){
+  S.settings=S.settings||{};
+  S.settings.masterKey=document.getElementById('sMasterKey').value.trim();
+  S.settings.binId=document.getElementById('sBinId').value.trim();
+  localStorage.setItem(LS_KEY,JSON.stringify(S));
 }
-
-function changePin() {
-  const p = document.getElementById('newPin').value.trim();
-  if(!/^\d{4}$/.test(p)) { alert('PIN must be exactly 4 digits.'); return; }
-  S.settings.pin = p;
-  saveSettings();
-  alert('PIN updated!');
-  document.getElementById('newPin').value='';
+function changePin(){
+  const p=document.getElementById('newPin').value.trim();
+  if(!/^\d{4}$/.test(p)){alert('PIN must be 4 digits');return;}
+  S.settings.pin=p;saveSettings();alert('PIN updated!');document.getElementById('newPin').value='';
 }
+function setSyncPill(cls,txt){const el=document.getElementById('syncPill');el.className='sync-pill '+cls;el.textContent=txt;}
+function syncMsg(txt,color='var(--green)'){const el=document.getElementById('syncMsg');if(el)el.innerHTML=`<span style="color:${color}">${txt}</span>`;}
 
-function setSyncPill(cls, txt) {
-  const el = document.getElementById('syncPill');
-  el.className='sync-pill '+cls;
-  el.textContent=txt;
-}
-
-function syncMsg(txt, color='var(--green)') {
-  const el=document.getElementById('syncMsg');
-  if(el) el.innerHTML=`<span style="color:${color}">${txt}</span>`;
-}
-
-// ══════════════════════════════════════════════════
-//  SYNC (JSONBin.io)
-// ══════════════════════════════════════════════════
-function startSync() {
-  if(syncTimer) clearInterval(syncTimer);
+// ── SYNC (GitHub Gist) ──
+function startSync(){
+  if(syncTimer)clearInterval(syncTimer);
   pullCloud(false);
-  syncTimer = setInterval(()=>pullCloud(false), 60000); // pull every 60s
+  syncTimer=setInterval(()=>pullCloud(false),60000);
 }
 
-async function pushCloud() {
-  const { masterKey, binId } = S.settings||{};
-  if(!masterKey||!binId) return;
-  setSyncPill('busy','↻ Pushing…');
-  try {
-    const payload = { buys:S.buys, sells:S.sells, deals:S.deals, calc:S.calc, tRates:S.tRates };
-    const r = await fetch(`https://api.github.com/gists/${binId}`, {
+async function pushCloud(){
+  const{masterKey,binId}=S.settings||{};if(!masterKey||!binId)return;
+  setSyncPill('busy','↻ Saving…');
+  try{
+    const payload={buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates};
+    const r=await fetch(`https://api.github.com/gists/${binId}`,{
       method:'PATCH',
       headers:{'Content-Type':'application/json','Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'},
-      body: JSON.stringify({ files:{ 'usdt.json':{ content: JSON.stringify(payload) } } })
+      body:JSON.stringify({files:{'usdt.json':{content:JSON.stringify(payload)}}})
     });
-    if(r.ok) setSyncPill('ok','✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-    else { const e=await r.json(); setSyncPill('err','✗ '+r.status); console.error(e); }
-  } catch(e) { setSyncPill('err','✗ Offline'); }
+    if(r.ok)setSyncPill('ok','✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    else setSyncPill('err','✗ '+r.status);
+  }catch(e){setSyncPill('err','✗ Offline');}
 }
 
-async function pullCloud(showMsg=true) {
-  const { masterKey, binId } = S.settings||{};
-  if(!masterKey||!binId) { setSyncPill('','⚡ Setup Sync'); return; }
-  if(showMsg) setSyncPill('busy','↻ Pulling…');
-  try {
-    const r = await fetch(`https://api.github.com/gists/${binId}`, {
+async function pullCloud(showMsg=true){
+  const{masterKey,binId}=S.settings||{};
+  if(!masterKey||!binId){setSyncPill('','⚡ Setup Sync');return;}
+  if(showMsg)setSyncPill('busy','↻ Pulling…');
+  try{
+    const r=await fetch(`https://api.github.com/gists/${binId}`,{
       headers:{'Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'}
     });
-    if(r.ok) {
-      const gist = await r.json();
-      const raw = gist.files?.['usdt.json']?.content;
-      if(!raw) { if(showMsg) syncMsg('Gist found but no usdt.json file yet — push will create it','var(--orange)'); setSyncPill('ok','✓ Connected'); return; }
-      const remote = JSON.parse(raw);
-      const settings = S.settings;
-      if(remote.buys)   S.buys   = remote.buys;
-      if(remote.sells)  S.sells  = remote.sells;
-      if(remote.deals)  S.deals  = remote.deals;
-      if(remote.calc)   S.calc   = remote.calc;
-      if(remote.tRates) S.tRates = remote.tRates;
-      S.settings = settings;
-      localStorage.setItem(LS_KEY, JSON.stringify(S));
-
-      renderBuys(); renderSells(); renderDeals(); calcTracker();
-      if(remote.tRates?.mktRate) setVal('tMktRate',remote.tRates.mktRate);
-      if(remote.tRates?.usdAed)  setVal('tUsdAed', remote.tRates.usdAed);
-      if(remote.calc) {
+    if(r.ok){
+      const gist=await r.json();
+      const raw=gist.files?.['usdt.json']?.content;
+      if(!raw){setSyncPill('ok','✓ Connected');if(showMsg)syncMsg('Connected — no data yet, push will create it','var(--orange)');return;}
+      const remote=JSON.parse(raw),settings=S.settings;
+      if(remote.buys)S.buys=remote.buys;if(remote.sells)S.sells=remote.sells;
+      if(remote.deals)S.deals=remote.deals;if(remote.calc)S.calc=remote.calc;
+      if(remote.tRates)S.tRates=remote.tRates;
+      S.settings=settings;localStorage.setItem(LS_KEY,JSON.stringify(S));
+      renderBuys();renderSells();renderDeals();calcTracker();
+      if(remote.tRates?.mktRate)setVal('tMktRate',remote.tRates.mktRate);
+      if(remote.tRates?.usdAed)setVal('tUsdAed',remote.tRates.usdAed);
+      if(remote.calc){
         const c=remote.calc;
-        if(c.netUSD!==undefined)    setVal('netUSD',c.netUSD);
-        if(c.usdAed!==undefined)    setVal('usdAed',c.usdAed);
-        if(c.buyRate!==undefined)   setVal('buyRate',c.buyRate);
-        if(c.mktRate!==undefined)   setVal('mktRate',c.mktRate);
-        if(c.dealerPct!==undefined) setVal('dealerPct',c.dealerPct);
-        if(c.yourPct!==undefined)   setVal('yourPct',c.yourPct);
-        if(c.fees!==undefined)      setVal('fees',c.fees);
-        if(c.bossPct!==undefined)   setVal('bossPct',c.bossPct);
+        ['netUSD','usdAed','buyRate','mktRate','dealerPct','yourPct','fees','bossPct'].forEach(k=>{if(c[k]!==undefined)setVal(k,c[k]);});
         calc();
       }
       setSyncPill('ok','✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-      if(showMsg) syncMsg('✓ Data pulled from GitHub Gist');
-    } else {
-      const e=await r.json();
-      setSyncPill('err','✗ '+r.status);
-      if(showMsg) syncMsg('Error '+r.status+': '+(e.message||'check your token & Gist ID'),'var(--red)');
+      if(showMsg)syncMsg('✓ Synced from GitHub');
+    }else{
+      const e=await r.json();setSyncPill('err','✗ '+r.status);
+      if(showMsg)syncMsg('Error '+r.status+': '+(e.message||'check token & Gist ID'),'var(--red)');
     }
-  } catch(e) {
-    setSyncPill('err','✗ Offline');
-    if(showMsg) syncMsg('Connection failed — check internet','var(--red)');
-  }
+  }catch(e){setSyncPill('err','✗ Offline');if(showMsg)syncMsg('No connection','var(--red)');}
 }
 
-async function syncNow() {
-  syncMsg('Syncing…','var(--orange)');
-  await pushCloud();
-  await pullCloud(true);
-}
+async function syncNow(){syncMsg('Syncing…','var(--orange)');await pushCloud();await pullCloud(true);}
+async function testConn(){syncMsg('Testing…','var(--orange)');await pullCloud(true);}
 
-async function testConn() {
-  syncMsg('Testing…','var(--orange)');
-  await pullCloud(true);
+// ── EXPORT/IMPORT ──
+function exportJSON(){
+  const blob=new Blob([JSON.stringify({buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='usdt-calc-'+new Date().toISOString().slice(0,10)+'.json';a.click();
 }
-
-// ══════════════════════════════════════════════════
-//  EXPORT / IMPORT / CLEAR
-// ══════════════════════════════════════════════════
-function exportJSON() {
-  const d={buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates};
-  const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='usdt-calc-'+new Date().toISOString().slice(0,10)+'.json';
-  a.click();
-}
-function importJSON() { document.getElementById('importFile').click(); }
-function handleImport(e) {
-  const f=e.target.files[0]; if(!f) return;
+function importJSON(){document.getElementById('importFile').click();}
+function handleImport(e){
+  const file=e.target.files[0];if(!file)return;
   const r=new FileReader();
-  r.onload=ev=>{
-    try {
-      const d=JSON.parse(ev.target.result);
-      if(d.buys)  S.buys=d.buys;
-      if(d.sells) S.sells=d.sells;
-      if(d.deals) S.deals=d.deals;
-      if(d.calc)  S.calc=d.calc;
-      if(d.tRates) S.tRates=d.tRates;
-      persist(); renderBuys(); renderSells(); calcTracker(); renderDeals();
-      alert('Imported successfully!');
-    } catch(err){ alert('Invalid file: '+err.message); }
-  };
-  r.readAsText(f);
+  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.buys)S.buys=d.buys;if(d.sells)S.sells=d.sells;if(d.deals)S.deals=d.deals;persist();renderBuys();renderSells();calcTracker();renderDeals();alert('Imported!');}catch(err){alert('Invalid file');}};
+  r.readAsText(file);
 }
-function clearAll() {
-  if(!confirm('Delete ALL data? Cannot be undone.')) return;
-  S.buys=[]; S.sells=[]; S.deals=[];
-  persist(); renderBuys(); renderSells(); calcTracker(); renderDeals();
-  alert('All data cleared.');
-}
+function clearAll(){if(!confirm('Delete ALL data?'))return;S.buys=[];S.sells=[];S.deals=[];persist();renderBuys();renderSells();calcTracker();renderDeals();}
 </script>
 </body>
 </html>
