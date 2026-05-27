@@ -1044,8 +1044,10 @@ async function tapSync(){
     setSyncPill('ok','✓',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
   }catch(e){
     setSyncPill('err','✕','Error');
+    syncMsg('Sync error: '+e.message,'var(--red)');
+  }finally{
+    isSyncing=false;
   }
-  isSyncing=false;
 }
 
 // ── SYNC (GitHub Gist) ──
@@ -1061,15 +1063,16 @@ function startSync(){
 
 async function pushCloud(){
   const{masterKey,binId}=S.settings||{};if(!masterKey||!binId)return;
-  try{
-    const payload={buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates,ts:Date.now()};
-    const r=await fetch(`https://api.github.com/gists/${binId}`,{
-      method:'PATCH',
-      headers:{'Content-Type':'application/json','Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify({files:{'usdt.json':{content:JSON.stringify(payload)}}})
-    });
-    if(!r.ok)console.warn('push failed',r.status);
-  }catch(e){console.warn('push error',e);}
+  const payload={buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates,ts:Date.now()};
+  const r=await fetch(`https://api.github.com/gists/${binId}`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json','Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'},
+    body:JSON.stringify({files:{'usdt.json':{content:JSON.stringify(payload)}}})
+  });
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}));
+    throw new Error('Push failed '+r.status+': '+(e.message||'check token scope'));
+  }
 }
 
 async function pullCloud(showMsg=true){
