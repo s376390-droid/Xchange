@@ -164,6 +164,12 @@ table input{padding:6px 9px;font-size:12px;border-radius:7px;min-width:70px}
 .sync-msg{font-size:12px;min-height:18px;margin-top:6px}
 hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
 
+/* ── PAYMENT TOGGLE ── */
+.pmt-toggle{width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:.2s;background:var(--bdr);display:block;margin:0 auto;flex-shrink:0}
+.pmt-toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.pmt-toggle.on{background:var(--green)}
+.pmt-toggle.on::after{left:23px}
+
 /* ── PNL ── */
 .pnl-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .pnl-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:12px}
@@ -238,6 +244,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
     <button class="tb active" onclick="goTab('calc',this)">💱 Deal Calc</button>
     <button class="tb" onclick="goTab('tracker',this)">📊 Tracker</button>
     <button class="tb" onclick="goTab('deals',this)">📁 Saved Deals</button>
+    <button class="tb" onclick="goTab('payments',this)">🗓️ Payment Schedule</button>
   </nav>
 
   <!-- DEAL CALCULATOR -->
@@ -251,39 +258,47 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
           <div class="field">
             <label>Net USD Client Receives</label>
             <input type="number" id="netUSD" value="260380" class="hl" oninput="calc()">
+            <div class="hint">💵 The exact USD amount the client gets in their account (before any commissions)</div>
           </div>
           <div class="row2" style="margin-bottom:14px">
             <div class="field">
               <label>USD / AED Rate</label>
               <input type="number" id="usdAed" value="3.6725" step=".0001" class="hl" oninput="calc()">
+              <div class="hint">🏦 Bank FX rate — converts USD ↔ AED</div>
             </div>
             <div class="field">
               <label>USDT Buy Rate (Leo)</label>
               <input type="number" id="buyRate" value="3.644" step=".0001" class="hl" oninput="calc()">
+              <div class="hint">🟡 Rate Leo charges you per USDT (in AED) — your cost</div>
             </div>
           </div>
           <div class="field">
             <label>USDT Market Rate</label>
             <input type="number" id="mktRate" value="3.67" step=".0001" class="hl" oninput="calc()">
+            <div class="hint">📈 Current public market price of USDT — spread profit = (market − Leo's rate) × USDT</div>
           </div>
           <div class="row2" style="margin-bottom:14px">
             <div class="field">
               <label>Dealer Comm % (Sunny)</label>
               <input type="number" id="dealerPct" value="2" step=".1" class="hl" oninput="calc()">
+              <div class="hint">🤝 Sunny's cut — added on top of client's USD, you hand this to Sunny in cash</div>
             </div>
             <div class="field">
               <label>Your Comm %</label>
               <input type="number" id="yourPct" value="1" step=".1" class="hl" oninput="calc()">
+              <div class="hint">💰 Your fee for arranging the USD transfer — this is your gross commission</div>
             </div>
           </div>
           <div class="row2">
             <div class="field">
               <label>Transfer Fees (USD)</label>
               <input type="number" id="fees" value="400" class="hl" oninput="calc()">
+              <div class="hint">🏧 Wire/TT bank fees deducted from your commission</div>
             </div>
             <div class="field">
               <label>Boss Split %</label>
               <input type="number" id="bossPct" value="50" step="1" class="hl" oninput="calc()">
+              <div class="hint">👔 Boss takes this % of your net commission (after fees)</div>
             </div>
           </div>
         </div>
@@ -398,44 +413,51 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
 
         <div class="card">
           <div class="sec-hdr">📈 Your Profit Breakdown</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6;padding:10px 12px;background:var(--surf2);border-radius:8px;border:1px solid var(--bdr)">
+            Two profit sources: <strong style="color:var(--sky)">① USD Transfer Commission</strong> (your % on the client's USD, minus fees &amp; boss split) + <strong style="color:var(--green)">② USDT Spread</strong> (you bought USDT from Leo cheaper than market — that difference is 100% yours).
+          </div>
           <div class="rt-hdr">
             <div class="c"></div>
             <div class="c">USD</div>
             <div class="c">AED</div>
             <div class="c col-usdt"></div>
           </div>
+
+          <div style="font-size:10px;color:var(--sky);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:10px 0 4px">💸 Source 1 — USD Transfer Commission</div>
           <div class="rt-row">
-            <div class="c">① Gross commission</div>
+            <div class="c">① Your gross comm (<span id="yourPctLbl2">1</span>% of client USD)</div>
             <div class="c cyours" id="p1u">—</div>
             <div class="c caed" id="p1a">—</div>
             <div class="c col-usdt" id="p1n" style="font-size:11px;color:var(--muted)"></div>
           </div>
           <div class="rt-row">
-            <div class="c indent">Less transfer fees</div>
+            <div class="c indent">Less wire/TT transfer fees</div>
             <div class="c cred" id="p2u">—</div>
             <div class="c cred" id="p2a">—</div>
             <div class="c col-usdt cmuted">—</div>
           </div>
           <div class="rt-row">
-            <div class="c indent">Net after fees</div>
+            <div class="c indent">Net comm after fees</div>
             <div class="c cyours" id="p3u">—</div>
             <div class="c caed" id="p3a">—</div>
             <div class="c col-usdt cmuted">—</div>
           </div>
           <div class="rt-row">
-            <div class="c indent">Boss takes <span id="bossLbl">50</span>%</div>
+            <div class="c indent">Boss takes <span id="bossLbl">50</span>% of net</div>
             <div class="c cmuted" id="p4u">—</div>
             <div class="c cmuted" id="p4a">—</div>
             <div class="c col-usdt cmuted">—</div>
           </div>
           <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--sky);padding-left:8px">
-            <div class="c" style="font-weight:600">→ Your net commission</div>
+            <div class="c" style="font-weight:600">→ Your net commission <span style="font-size:10px;color:var(--muted);font-weight:400">(from USD TT transfer)</span></div>
             <div class="c cyours" id="p5u" style="font-size:14px">—</div>
             <div class="c caed" id="p5a" style="font-size:14px">—</div>
             <div class="c col-usdt cmuted">—</div>
           </div>
-          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--green);padding-left:8px;margin-top:2px">
-            <div class="c" style="font-weight:600">② Spread — 100% yours</div>
+
+          <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:14px 0 4px">📈 Source 2 — USDT Rate Spread</div>
+          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--green);padding-left:8px">
+            <div class="c" style="font-weight:600">② USDT spread <span style="font-size:10px;color:var(--muted);font-weight:400">(market rate − Leo's buy rate) × USDT sent</span></div>
             <div class="c cprofit" id="p6u">—</div>
             <div class="c caed" id="p6a">—</div>
             <div class="c col-usdt" id="p6pct" style="font-size:11px;color:var(--muted)"></div>
@@ -454,7 +476,8 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
             <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0">
               <!-- Net Commission (USD transfer) -->
               <div style="text-align:center;padding:0 12px">
-                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">💸 USD Transfer Profit</div>
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">💸 USD Transfer Comm</div>
+                <div style="font-size:9px;color:var(--muted);margin-bottom:6px;opacity:.7">Your % cut after fees &amp; boss split</div>
                 <div style="font-size:20px;font-weight:800;color:var(--sky)" id="bannerNetComm">—</div>
                 <div style="font-size:13px;font-weight:600;color:var(--sky);opacity:.7;margin-top:3px" id="bannerNetCommAED">—</div>
               </div>
@@ -462,7 +485,8 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
               <div style="background:var(--bdr)"></div>
               <!-- Spread (USDT rate diff) -->
               <div style="text-align:center;padding:0 12px">
-                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">📈 USDT Spread Profit</div>
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">📈 USDT Rate Spread</div>
+                <div style="font-size:9px;color:var(--muted);margin-bottom:6px;opacity:.7">Market rate − Leo's rate × USDT (100% yours)</div>
                 <div style="font-size:20px;font-weight:800;color:var(--green)" id="bannerSpread">—</div>
                 <div style="font-size:13px;font-weight:600;color:var(--green);opacity:.7;margin-top:3px" id="bannerSpreadAED">—</div>
               </div>
@@ -566,10 +590,12 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
         <div class="field">
           <label>Market Rate (AED/USDT)</label>
           <input type="number" id="tMktRate" value="3.68" step=".0001" class="hl" oninput="calcTracker()">
+          <div class="hint">📈 Current market price of USDT — values your remaining USDT in hand to calculate <strong style="color:var(--orange)">unrealised profit</strong></div>
         </div>
         <div class="field">
           <label>USD / AED Rate</label>
           <input type="number" id="tUsdAed" value="3.6725" step=".0001" class="hl" oninput="calcTracker()">
+          <div class="hint">💱 FX rate — converts all AED amounts into <strong style="color:var(--green)">USD</strong> for the P&amp;L summary totals</div>
         </div>
       </div>
     </div>
@@ -618,7 +644,49 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
       <div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.<br>Calculate a deal and hit <strong>Save</strong>.</div>
     </div>
   </div>
-</div>
+
+  <!-- PAYMENT SCHEDULE -->
+  <div class="panel" id="panel-payments">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+        <div style="font-size:18px;font-weight:800">🗓️ Payment Schedule</div>
+        <div style="font-size:12px;color:var(--muted);background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:4px 10px">
+          AED values at <strong style="color:var(--sky)" id="pmtFxLabel">3.67</strong> USD/AED
+          <span style="color:var(--muted);margin-left:4px;font-size:10px">(from Tracker rate)</span>
+        </div>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="addPayment()">+ Add Payment</button>
+    </div>
+
+    <!-- Summary strip -->
+    <div class="stat-row" id="pmtStatRow" style="margin-bottom:16px"></div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="tbl-wrap" style="border:none;border-radius:0">
+        <table id="pmtTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Amount Sent (USD)</th>
+              <th>AED Value</th>
+              <th>Date</th>
+              <th style="text-align:center">Received ✓</th>
+              <th>TT Fees (USD)</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="pmtBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pmtEmpty" style="text-align:center;padding:60px 20px;color:var(--muted);display:none">
+      No payments yet. Hit <strong>+ Add Payment</strong> to start.
+    </div>
+  </div>
+
+</div><!-- /#app -->
 
 <!-- SETTINGS MODAL -->
 <div class="overlay" id="settingsOverlay" style="display:none" onclick="overlayClick(event)">
@@ -673,7 +741,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
 <script>
 // ── STATE ──
 let S = {
-  buys:[], sells:[], deals:[],
+  buys:[], sells:[], deals:[], payments:[],
   settings:{pin:'8888',masterKey:'',binId:''},
   calc:{}, tRates:{}
 };
@@ -702,7 +770,7 @@ function renderDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classLi
 function unlock(){
   document.getElementById('pinScreen').style.display='none';
   document.getElementById('app').style.display='block';
-  loadState(); calc(); calcTracker(); renderDeals();
+  loadState(); calc(); calcTracker(); renderDeals(); renderPayments();
   document.getElementById('sMasterKey').value=S.settings?.masterKey||'';
   document.getElementById('sBinId').value=S.settings?.binId||'';
   startSync();
@@ -805,6 +873,7 @@ function calc(){
   s('p6u',spreadUSD);s('p6a',spreadAED);
   document.getElementById('p6pct').textContent=spreadPct.toFixed(2)+'% spread';
   document.getElementById('bossLbl').textContent=Math.round(n('bossPct'));
+  const yl2=document.getElementById('yourPctLbl2');if(yl2)yl2.textContent=n('yourPct');
   document.getElementById('totalProfitUSD').textContent='$'+f(totalPUSD);
   document.getElementById('totalProfitAED').textContent=f(totalPAED)+' AED';
   const bnc=document.getElementById('bannerNetComm');    if(bnc)bnc.textContent='$'+f(myNetUSD);
@@ -970,9 +1039,9 @@ function calcTracker(){
     <div class="stat"><div class="sl">USDT Purchased</div><div class="sv cusdt">${f(totB,0)}</div><div class="ss">Avg buy: ${avgB.toFixed(4)}</div></div>
     <div class="stat"><div class="sl">USDT Sold</div><div class="sv cusd">${f(totS,0)}</div><div class="ss">Avg sell: ${avgS.toFixed(4)}</div></div>
     <div class="stat"><div class="sl">USDT in Hand</div><div class="sv caed">${f(rem,0)}</div><div class="ss">Value: ${f(mktV,0)} AED</div></div>
-    <div class="stat"><div class="sl">Realised Profit</div><div class="sv" style="color:${rPU>=0?'var(--green)':'var(--red)'}">$${f(rPU)}</div><div class="ss">${f(rPA)} AED (${rM.toFixed(2)}%)</div></div>
-    <div class="stat"><div class="sl">Unrealised Profit</div><div class="sv" style="color:${uPU>=0?'var(--green)':'var(--red)'}">$${f(uPU)}</div><div class="ss">${f(uPA)} AED</div></div>
-    <div class="stat" style="border-color:${tPU>=0?'var(--green)':'var(--red)'}"><div class="sl">💰 Total P&L</div><div class="sv" style="color:${tPU>=0?'var(--green)':'var(--red)'};font-size:22px">$${f(tPU)}</div><div class="ss">${f(tPA)} AED</div></div>`;
+    <div class="stat"><div class="sl">Realised Profit</div><div class="sv" style="color:${rPA>=0?'var(--green)':'var(--red)'}">${f(rPA,0)} AED</div><div class="ss">$${f(rPU)} · ${rM.toFixed(2)}%</div></div>
+    <div class="stat"><div class="sl">Unrealised Profit</div><div class="sv" style="color:${uPA>=0?'var(--green)':'var(--red)'}">${f(uPA,0)} AED</div><div class="ss">$${f(uPU)}</div></div>
+    <div class="stat" style="border-color:${tPA>=0?'var(--green)':'var(--red)'}"><div class="sl">💰 Total P&L</div><div class="sv" style="color:${tPA>=0?'var(--green)':'var(--red)'};font-size:22px">${f(tPA,0)} AED</div><div class="ss">$${f(tPU)}</div></div>`;
 
   const pc=document.getElementById('pnlCols');
   if(pc)pc.innerHTML=`
@@ -990,9 +1059,9 @@ function calcTracker(){
     </div>
     <div>
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📈 P&L</div>
-      <div class="pnl-row"><span class="k">Realised (AED)</span><span class="v" style="color:${rPA>=0?'var(--green)':'var(--red)'}">${f(rPA)}</span></div>
-      <div class="pnl-row"><span class="k">Unrealised (AED)</span><span class="v" style="color:${uPA>=0?'var(--green)':'var(--red)'}">${f(uPA)}</span></div>
-      <div class="pnl-row"><span class="k"><strong>Total (USD)</strong></span><span class="v" style="color:${tPU>=0?'var(--green)':'var(--red)'};font-size:15px">$${f(tPU)}</span></div>
+      <div class="pnl-row"><span class="k">Realised</span><span class="v" style="color:${rPA>=0?'var(--green)':'var(--red)'}">${f(rPA,0)} AED <span style="font-size:11px;color:var(--muted)">/ $${f(rPU)}</span></span></div>
+      <div class="pnl-row"><span class="k">Unrealised</span><span class="v" style="color:${uPA>=0?'var(--green)':'var(--red)'}">${f(uPA,0)} AED <span style="font-size:11px;color:var(--muted)">/ $${f(uPU)}</span></span></div>
+      <div class="pnl-row"><span class="k"><strong>Total</strong></span><span class="v" style="color:${tPA>=0?'var(--green)':'var(--red)'};font-size:15px">${f(tPA,0)} AED <span style="font-size:11px;color:var(--muted)">/ $${f(tPU)}</span></span></div>
     </div>`;
   persist();
 }
@@ -1063,7 +1132,7 @@ function startSync(){
 
 async function pushCloud(){
   const{masterKey,binId}=S.settings||{};if(!masterKey||!binId)return;
-  const payload={buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates,ts:Date.now()};
+  const payload={buys:S.buys,sells:S.sells,deals:S.deals,payments:S.payments,calc:S.calc,tRates:S.tRates,ts:Date.now()};
   const r=await fetch(`https://api.github.com/gists/${binId}`,{
     method:'PATCH',
     headers:{'Content-Type':'application/json','Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'},
@@ -1088,10 +1157,10 @@ async function pullCloud(showMsg=true){
       if(!raw){if(showMsg)syncMsg('Connected — no data yet','var(--orange)');return;}
       const remote=JSON.parse(raw),settings=S.settings;
       if(remote.buys)S.buys=remote.buys;if(remote.sells)S.sells=remote.sells;
-      if(remote.deals)S.deals=remote.deals;if(remote.calc)S.calc=remote.calc;
+      if(remote.deals)S.deals=remote.deals;if(remote.payments)S.payments=remote.payments;if(remote.calc)S.calc=remote.calc;
       if(remote.tRates)S.tRates=remote.tRates;
       S.settings=settings;localStorage.setItem(LS_KEY,JSON.stringify(S));
-      renderBuys();renderSells();renderDeals();calcTracker();
+      renderBuys();renderSells();renderDeals();renderPayments();calcTracker();
       if(remote.tRates?.mktRate)setVal('tMktRate',remote.tRates.mktRate);
       if(remote.tRates?.usdAed)setVal('tUsdAed',remote.tRates.usdAed);
       if(remote.calc){
@@ -1124,7 +1193,76 @@ function handleImport(e){
   r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.buys)S.buys=d.buys;if(d.sells)S.sells=d.sells;if(d.deals)S.deals=d.deals;persist();renderBuys();renderSells();calcTracker();renderDeals();alert('Imported!');}catch(err){alert('Invalid file');}};
   r.readAsText(file);
 }
-function clearAll(){if(!confirm('Delete ALL data?'))return;S.buys=[];S.sells=[];S.deals=[];persist();renderBuys();renderSells();calcTracker();renderDeals();}
+function clearAll(){if(!confirm('Delete ALL data?'))return;S.buys=[];S.sells=[];S.deals=[];S.payments=[];persist();renderBuys();renderSells();calcTracker();renderDeals();renderPayments();}
+
+// ── PAYMENT SCHEDULE ──
+function addPayment(){
+  if(!S.payments)S.payments=[];
+  S.payments.push({id:Date.now(),amt:0,date:today(),confirmed:false,ttFees:0,notes:''});
+  renderPayments();persist();
+}
+function delPayment(id){if(!confirm('Delete?'))return;S.payments=S.payments.filter(x=>x.id!=id);renderPayments();persist();}
+function updPayment(id,field,val){
+  const p=S.payments.find(x=>x.id==id);if(!p)return;
+  if(field==='amt'||field==='ttFees')p[field]=parseFloat(val)||0;
+  else if(field==='confirmed')p[field]=val;
+  else p[field]=val;
+  renderPayments();persist();
+}
+
+function renderPayments(){
+  if(!S.payments)S.payments=[];
+  const tbody=document.getElementById('pmtBody');
+  const empty=document.getElementById('pmtEmpty');
+  const tbl=document.getElementById('pmtTable');
+  if(!tbody)return;
+
+  if(!S.payments.length){
+    if(tbl)tbl.style.display='none';
+    if(empty)empty.style.display='block';
+    renderPmtStats();return;
+  }
+  if(tbl)tbl.style.display='table';
+  if(empty)empty.style.display='none';
+
+  const fxRate=n('tUsdAed')||n('usdAed')||3.67;
+  const lbl=document.getElementById('pmtFxLabel');if(lbl)lbl.textContent=fxRate.toFixed(4);
+  tbody.innerHTML=S.payments.map((p,i)=>{
+    const aed=(p.amt||0)*fxRate;
+    return `<tr style="${p.confirmed?'opacity:.65':''}">
+    <td style="color:var(--muted);font-size:12px">${i+1}</td>
+    <td><input type="number" value="${p.amt||''}" placeholder="0.00" onchange="updPayment(${p.id},'amt',this.value)" style="min-width:110px"></td>
+    <td style="color:var(--sky);font-weight:700;white-space:nowrap;font-size:13px">${aed>0?f(aed,0)+' AED':'—'}</td>
+    <td><input type="date" value="${toISODate(p.date)}" onchange="updPayment(${p.id},'date',this.value)" style="min-width:130px"></td>
+    <td style="text-align:center">
+      <button class="pmt-toggle${p.confirmed?' on':''}" onclick="updPayment(${p.id},'confirmed',${!p.confirmed})" title="${p.confirmed?'Confirmed':'Pending'}"></button>
+      <div style="font-size:9px;color:${p.confirmed?'var(--green)':'var(--muted)'};margin-top:4px;font-weight:700">${p.confirmed?'CONFIRMED':'PENDING'}</div>
+    </td>
+    <td><input type="number" value="${p.ttFees||''}" placeholder="0" onchange="updPayment(${p.id},'ttFees',this.value)" style="min-width:80px"></td>
+    <td><input type="text" value="${h(p.notes||'')}" placeholder="Optional notes…" onchange="updPayment(${p.id},'notes',this.value)" style="min-width:140px"></td>
+    <td><button class="del-btn" onclick="delPayment(${p.id})">×</button></td>
+  </tr>`;}).join('');
+
+  renderPmtStats();
+}
+
+function renderPmtStats(){
+  if(!S.payments)S.payments=[];
+  const sr=document.getElementById('pmtStatRow');if(!sr)return;
+  const fx=n('tUsdAed')||n('usdAed')||3.67;
+  const total=S.payments.reduce((a,p)=>a+(p.amt||0),0);
+  const confirmed=S.payments.filter(p=>p.confirmed).reduce((a,p)=>a+(p.amt||0),0);
+  const pending=total-confirmed;
+  const totalFees=S.payments.reduce((a,p)=>a+(p.ttFees||0),0);
+  const count=S.payments.length;
+  const confirmedCount=S.payments.filter(p=>p.confirmed).length;
+  sr.innerHTML=`
+    <div class="stat"><div class="sl">Total Payments</div><div class="sv cusd">${count}</div><div class="ss">${confirmedCount} confirmed</div></div>
+    <div class="stat"><div class="sl">Total Sent (USD)</div><div class="sv cusd">$${f(total)}</div><div class="ss">${f(total*fx,0)} AED</div></div>
+    <div class="stat" style="border-color:var(--green)"><div class="sl">Confirmed</div><div class="sv" style="color:var(--green)">$${f(confirmed)}</div><div class="ss" style="color:var(--sky)">${f(confirmed*fx,0)} AED</div></div>
+    <div class="stat" style="border-color:var(--orange)"><div class="sl">Pending</div><div class="sv" style="color:var(--orange)">$${f(pending)}</div><div class="ss" style="color:var(--sky)">${f(pending*fx,0)} AED</div></div>
+    <div class="stat"><div class="sl">Total TT Fees</div><div class="sv cred">$${f(totalFees)}</div><div class="ss">${f(totalFees*fx,0)} AED</div></div>`;
+}
 </script>
 </body>
 </html>
