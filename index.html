@@ -1,1268 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💱 USDT Deal Calculator</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0f1520;
-  --surf:#17202e;
-  --surf2:#1e2a3c;
-  --surf3:#243245;
-  --bdr:#2a3a52;
-  --txt:#dce8f5;
-  --muted:#6b82a0;
-  --soft:#8ba0bc;
-  --accent:#4f8ef7;
-  --green:#22c55e;
-  --orange:#f97316;
-  --sky:#38bdf8;
-  --yellow:#facc15;
-  --red:#f87171;
-}
-body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent;font-size:14px}
-
-/* ── PIN SCREEN ── */
-#pinScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;z-index:9999}
-.pin-logo{font-size:48px}
-.pin-title{font-size:20px;font-weight:700;color:var(--txt)}
-.pin-sub{font-size:13px;color:var(--muted)}
-.pin-dots{display:flex;gap:16px}
-.dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--bdr);background:transparent;transition:.15s}
-.dot.on{background:var(--accent);border-color:var(--accent)}
-.pin-err{font-size:12px;color:var(--red);min-height:16px;text-align:center}
-.numpad{display:grid;grid-template-columns:repeat(3,72px);gap:10px}
-.nk{width:72px;height:72px;border-radius:50%;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);font-size:22px;font-weight:600;cursor:pointer;transition:.12s;display:flex;align-items:center;justify-content:center}
-.nk:hover{background:var(--surf2)}
-.nk:active{transform:scale(.92);background:var(--accent);border-color:var(--accent);color:#fff}
-.nk.wide{border-radius:36px;font-size:12px;color:var(--muted);font-weight:500}
-
-/* ── APP ── */
-#app{display:none;min-height:100vh}
-header{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
-.logo{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--txt)}.logo em{color:var(--accent);font-style:normal}
-.hdr-r{display:flex;gap:8px;align-items:center}
-.sync-pill{display:flex;align-items:center;gap:5px;font-size:11px;padding:6px 14px;border-radius:20px;border:1px solid var(--bdr);color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:600;background:var(--surf2);transition:.15s;-webkit-tap-highlight-color:transparent}
-.sync-pill:hover{border-color:var(--accent);color:var(--accent)}
-.sync-pill:active{transform:scale(.95)}
-.sync-pill.ok{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.08)}
-.sync-pill.busy{border-color:var(--orange);color:var(--orange);background:rgba(249,115,22,.08)}
-.sync-pill.err{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.08)}
-.spin{display:inline-block;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ico-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--bdr);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s}
-.ico-btn:hover{background:var(--surf2);color:var(--txt)}
-
-/* ── TABS ── */
-.tabs-nav{background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;padding:0 20px;gap:0;overflow-x:auto;scrollbar-width:none}
-.tabs-nav::-webkit-scrollbar{display:none}
-.tb{padding:14px 18px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap}
-.tb.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tb:hover:not(.active){color:var(--txt)}
-
-/* ── PANELS ── */
-.panel{display:none;padding:24px 20px;max-width:1440px;margin:0 auto}
-.panel.active{display:block}
-
-/* ── CARDS ── */
-.card{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:16px}
-.ctitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
-
-/* ── FORM ── */
-.field{margin-bottom:14px}
-.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-input[type=number],input[type=text],select{
-  width:100%;padding:11px 14px;background:var(--surf2);border:1px solid var(--bdr);
-  border-radius:10px;color:var(--txt);font-size:15px;font-weight:600;
-  transition:border-color .15s,background .15s;-moz-appearance:textfield
-}
-input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
-input:focus,select:focus{outline:none;border-color:var(--accent);background:var(--surf3)}
-input.hl{border-left:3px solid var(--accent)}
-.hint{font-size:11px;color:var(--muted);margin-top:4px}
-input[type=date]{color-scheme:dark;min-width:110px;background:#1e3a5f;border-color:#2d5080}
-input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.7) brightness(1.4);cursor:pointer}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row2 .field{margin-bottom:0}
-
-/* ── LAYOUT ── */
-.calc-grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
-
-/* ── STAT BOXES ── */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:16px}
-.stat{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px}
-.stat .sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-weight:600}
-.stat .sv{font-size:20px;font-weight:800;line-height:1.1}
-.stat .ss{font-size:11px;color:var(--muted);margin-top:3px}
-
-/* ── RESULT TABLE ── */
-.rt-hdr,.rt-row{display:grid;grid-template-columns:1fr 108px 108px 100px;gap:4px;padding:10px 0;border-bottom:1px solid var(--bdr)}
-.rt-row:last-child{border-bottom:none}
-.rt-hdr .c{font-size:10px;color:var(--muted);text-align:right;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
-.rt-hdr .c:first-child{text-align:left}
-.rt-row .c{font-size:13px;text-align:right;font-family:'SF Mono',Menlo,monospace;font-weight:600}
-.rt-row .c:first-child{text-align:left;font-family:inherit;font-weight:400;font-size:13px;color:var(--txt)}
-.rt-row .c.indent{color:var(--muted);padding-left:14px;font-size:12px}
-.sec-hdr{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:16px 0 8px;border-top:1px solid var(--bdr)}
-.sec-hdr:first-child{border-top:none;padding-top:0}
-
-/* colors */
-.cusd{color:var(--green)}
-.caed{color:var(--sky)}
-.cusdt{color:var(--orange)}
-.csunny{color:var(--orange)}
-.cyours{color:var(--sky)}
-.cprofit{color:var(--green)}
-.cred{color:var(--red)}
-.cmuted{color:var(--muted)}
-
-/* ── PROFIT BANNER ── */
-.profit-banner{background:var(--surf2);border:1px solid var(--bdr);border-left:4px solid var(--green);border-radius:12px;padding:22px;text-align:center;margin-top:16px}
-.pb-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:600}
-.pb-amt{font-size:40px;font-weight:900;color:var(--green);letter-spacing:-1px}
-.pb-sub{font-size:13px;color:var(--muted);margin-top:4px}
-
-/* ── BUTTONS ── */
-.btn{padding:10px 18px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
-.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:.9}
-.btn-g{background:transparent;border:1px solid var(--bdr);color:var(--txt)}.btn-g:hover{background:var(--surf2)}
-.btn-sm{padding:7px 14px;font-size:12px}
-.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red)}.btn-danger:hover{background:rgba(248,113,113,.1)}
-
-/* ── TABLES ── */
-.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--bdr)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:var(--surf2);padding:10px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
-tbody td{padding:9px 10px;border-top:1px solid var(--bdr);vertical-align:middle}
-tbody tr:hover{background:var(--surf2)}
-table input{padding:6px 9px;font-size:12px;border-radius:7px;min-width:70px}
-.del-btn{background:transparent;border:1px solid var(--bdr);color:var(--red);padding:4px 9px;border-radius:6px;cursor:pointer;font-size:13px;line-height:1;transition:.15s}
-.del-btn:hover{border-color:var(--red);background:rgba(248,113,113,.08)}
-.add-row{width:100%;background:transparent;border:1px dashed var(--bdr);color:var(--muted);padding:10px;border-radius:10px;cursor:pointer;font-size:12px;margin-top:8px;transition:.15s;font-weight:500}
-.add-row:hover{border-color:var(--accent);color:var(--accent)}
-
-/* ── TRACKER ── */
-.tracker-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-
-/* ── DEAL CARDS ── */
-.deal-card{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:8px;cursor:pointer;transition:.15s}
-.deal-card:hover{border-color:var(--accent)}
-.deal-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.deal-name{font-weight:700;font-size:14px;color:var(--txt)}
-.deal-pills{display:flex;gap:12px;flex-wrap:wrap}
-.deal-pill{font-size:12px;color:var(--muted)}
-.deal-pill strong{color:var(--txt)}
-
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:17px;font-weight:800;margin-bottom:20px;color:var(--txt)}
-.sync-help{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px;padding:14px;background:var(--surf2);border-radius:10px;border:1px solid var(--bdr)}
-.sync-help a{color:var(--accent);text-decoration:none}
-.sync-msg{font-size:12px;min-height:18px;margin-top:6px}
-hr.div{border:none;border-top:1px solid var(--bdr);margin:18px 0}
-
-/* ── PAYMENT TOGGLE ── */
-.pmt-toggle{width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:.2s;background:var(--bdr);display:block;margin:0 auto;flex-shrink:0}
-.pmt-toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
-.pmt-toggle.on{background:var(--green)}
-.pmt-toggle.on::after{left:23px}
-
-/* ── PNL ── */
-.pnl-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.pnl-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:12px}
-.pnl-row:last-child{border-bottom:none}
-.pnl-row .k{color:var(--muted)}
-.pnl-row .v{font-weight:700;font-family:'SF Mono',Menlo,monospace;font-size:13px}
-
-/* ── SAVE BAR ── */
-.save-bar{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bdr)}
-.save-bar input{flex:1}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .calc-grid{grid-template-columns:1fr}
-  .tracker-cols{grid-template-columns:1fr}
-  .pnl-cols{grid-template-columns:1fr}
-  .rt-hdr,.rt-row{grid-template-columns:1fr 90px 90px}
-  .rt-row .c.col-usdt,.rt-hdr .c.col-usdt{display:none}
-}
-@media(max-width:540px){
-  header{padding:0 14px}.tabs-nav{padding:0 8px}.panel{padding:16px 12px}
-  .stat-row{grid-template-columns:1fr 1fr}
-  .row2{grid-template-columns:1fr}
-  .row2 .field{margin-bottom:12px}
-  .numpad{grid-template-columns:repeat(3,68px);gap:9px}
-  .nk{width:68px;height:68px;font-size:20px}
-  .modal{padding:18px}
-  .card{padding:16px}
-}
-</style>
-</head>
-<body>
-
-<!-- PIN SCREEN -->
-<div id="pinScreen">
-  <div class="pin-logo">🔐</div>
-  <div class="pin-title">USDT Deal Calculator</div>
-  <div class="pin-sub">Enter PIN to unlock</div>
-  <div class="pin-dots">
-    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
-    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
-  </div>
-  <div class="pin-err" id="pinErr"></div>
-  <div class="numpad">
-    <button class="nk" onclick="pk('1')">1</button>
-    <button class="nk" onclick="pk('2')">2</button>
-    <button class="nk" onclick="pk('3')">3</button>
-    <button class="nk" onclick="pk('4')">4</button>
-    <button class="nk" onclick="pk('5')">5</button>
-    <button class="nk" onclick="pk('6')">6</button>
-    <button class="nk" onclick="pk('7')">7</button>
-    <button class="nk" onclick="pk('8')">8</button>
-    <button class="nk" onclick="pk('9')">9</button>
-    <button class="nk wide" onclick="pk('X')">CLR</button>
-    <button class="nk" onclick="pk('0')">0</button>
-    <button class="nk wide" onclick="pk('B')">⌫</button>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app">
-  <header>
-    <div class="logo">💱 <em>USDT</em> Calc</div>
-    <div class="hdr-r">
-      <div class="sync-pill" id="syncPill" onclick="tapSync()"><span id="syncIcon">↻</span><span id="syncLabel"> Sync</span></div>
-      <button class="ico-btn" title="Settings" onclick="openSettings()">⚙️</button>
-      <button class="ico-btn" onclick="lockApp()">🔒</button>
-    </div>
-  </header>
-
-  <nav class="tabs-nav">
-    <button class="tb active" onclick="goTab('calc',this)">💱 Deal Calc</button>
-    <button class="tb" onclick="goTab('tracker',this)">📊 Tracker</button>
-    <button class="tb" onclick="goTab('deals',this)">📁 Saved Deals</button>
-    <button class="tb" onclick="goTab('payments',this)">🗓️ Payment Schedule</button>
-  </nav>
-
-  <!-- DEAL CALCULATOR -->
-  <div class="panel active" id="panel-calc">
-    <div class="calc-grid">
-
-      <!-- Inputs -->
-      <div>
-        <div class="card">
-          <div class="ctitle">📥 Deal Inputs</div>
-          <div class="field">
-            <label>Net USD Client Receives</label>
-            <input type="number" id="netUSD" value="260380" class="hl" oninput="calc()">
-            <div class="hint">💵 The exact USD amount the client gets in their account (before any commissions)</div>
-          </div>
-          <div class="row2" style="margin-bottom:14px">
-            <div class="field">
-              <label>USD / AED Rate</label>
-              <input type="number" id="usdAed" value="3.6725" step=".0001" class="hl" oninput="calc()">
-              <div class="hint">🏦 Bank FX rate — converts USD ↔ AED</div>
-            </div>
-            <div class="field">
-              <label>USDT Buy Rate (Leo)</label>
-              <input type="number" id="buyRate" value="3.644" step=".0001" class="hl" oninput="calc()">
-              <div class="hint">🟡 Rate Leo charges you per USDT (in AED) — your cost</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>USDT Market Rate</label>
-            <input type="number" id="mktRate" value="3.67" step=".0001" class="hl" oninput="calc()">
-            <div class="hint">📈 Current public market price of USDT — spread profit = (market − Leo's rate) × USDT</div>
-          </div>
-          <div class="row2" style="margin-bottom:14px">
-            <div class="field">
-              <label>Dealer Comm % (Sunny)</label>
-              <input type="number" id="dealerPct" value="2" step=".1" class="hl" oninput="calc()">
-              <div class="hint">🤝 Sunny's cut — added on top of client's USD, you hand this to Sunny in cash</div>
-            </div>
-            <div class="field">
-              <label>Your Comm %</label>
-              <input type="number" id="yourPct" value="1" step=".1" class="hl" oninput="calc()">
-              <div class="hint">💰 Your fee for arranging the USD transfer — this is your gross commission</div>
-            </div>
-          </div>
-          <div class="row2">
-            <div class="field">
-              <label>Transfer Fees (USD)</label>
-              <input type="number" id="fees" value="400" class="hl" oninput="calc()">
-              <div class="hint">🏧 Wire/TT bank fees deducted from your commission</div>
-            </div>
-            <div class="field">
-              <label>Boss Split %</label>
-              <input type="number" id="bossPct" value="50" step="1" class="hl" oninput="calc()">
-              <div class="hint">👔 Boss takes this % of your net commission (after fees)</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="ctitle">💾 Save Deal</div>
-          <div class="save-bar">
-            <input type="text" id="dealName" placeholder="e.g. Deal #3 — Client B">
-            <button class="btn btn-p btn-sm" onclick="saveDeal()">Save</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Results -->
-      <div>
-        <div class="stat-row">
-          <div class="stat">
-            <div class="sl">USDT → Request Leo</div>
-            <div class="sv cusdt" id="qs-usdt">—</div>
-            <div class="ss">Total USDT</div>
-          </div>
-          <div class="stat">
-            <div class="sl">AED Pool</div>
-            <div class="sv caed" id="qs-aed">—</div>
-            <div class="ss">Leo sends you</div>
-          </div>
-          <div class="stat">
-            <div class="sl">Hand Sunny</div>
-            <div class="sv csunny" id="qs-sunny">—</div>
-            <div class="ss">Client + dealer comm</div>
-          </div>
-          <div class="stat">
-            <div class="sl">Your Total Profit</div>
-            <div class="sv cprofit" id="qs-profit">—</div>
-            <div class="ss">Comm + spread</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="sec-hdr">🔢 Step-by-Step</div>
-          <div class="rt-hdr">
-            <div class="c"></div>
-            <div class="c">USD</div>
-            <div class="c">AED</div>
-            <div class="c col-usdt">USDT</div>
-          </div>
-          <div class="rt-row">
-            <div class="c">① Net USD to client</div>
-            <div class="c cusd" id="s1u">—</div>
-            <div class="c caed" id="s1a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c indent">② Dealer comm (Sunny)</div>
-            <div class="c csunny" id="s2u">—</div>
-            <div class="c caed" id="s2a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c indent">③ Your commission</div>
-            <div class="c cyours" id="s3u">—</div>
-            <div class="c caed" id="s3a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row" style="background:var(--surf2);border-radius:8px;margin:2px 0">
-            <div class="c" style="font-weight:600">④ Total needed</div>
-            <div class="c cusd" id="s4u">—</div>
-            <div class="c caed" id="s4a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--orange);padding-left:8px">
-            <div class="c" style="font-weight:600">⑤ USDT from Leo</div>
-            <div class="c cusd" id="s5u">—</div>
-            <div class="c caed" id="s5a">—</div>
-            <div class="c col-usdt cusdt" id="s5t" style="font-size:15px;font-weight:900">—</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="sec-hdr">💸 Money Flow</div>
-          <div class="rt-hdr">
-            <div class="c"></div>
-            <div class="c">USD</div>
-            <div class="c">AED</div>
-            <div class="c col-usdt">USDT</div>
-          </div>
-          <div class="rt-row">
-            <div class="c">Leo sends you</div>
-            <div class="c cmuted">—</div>
-            <div class="c caed" id="mf1a">—</div>
-            <div class="c col-usdt cusdt" id="mf1t">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c">Send client (net)</div>
-            <div class="c cusd" id="mf2u">—</div>
-            <div class="c caed" id="mf2a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c">Hand Sunny (client + 2%)</div>
-            <div class="c csunny" id="mf3u">—</div>
-            <div class="c caed" id="mf3a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c">You keep (gross comm)</div>
-            <div class="c cyours" id="mf4u">—</div>
-            <div class="c caed" id="mf4a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="sec-hdr">📈 Your Profit Breakdown</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6;padding:10px 12px;background:var(--surf2);border-radius:8px;border:1px solid var(--bdr)">
-            Two profit sources: <strong style="color:var(--sky)">① USD Transfer Commission</strong> (your % on the client's USD, minus fees &amp; boss split) + <strong style="color:var(--green)">② USDT Spread</strong> (you bought USDT from Leo cheaper than market — that difference is 100% yours).
-          </div>
-          <div class="rt-hdr">
-            <div class="c"></div>
-            <div class="c">USD</div>
-            <div class="c">AED</div>
-            <div class="c col-usdt"></div>
-          </div>
-
-          <div style="font-size:10px;color:var(--sky);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:10px 0 4px">💸 Source 1 — USD Transfer Commission</div>
-          <div class="rt-row">
-            <div class="c">① Your gross comm (<span id="yourPctLbl2">1</span>% of client USD)</div>
-            <div class="c cyours" id="p1u">—</div>
-            <div class="c caed" id="p1a">—</div>
-            <div class="c col-usdt" id="p1n" style="font-size:11px;color:var(--muted)"></div>
-          </div>
-          <div class="rt-row">
-            <div class="c indent">Less wire/TT transfer fees</div>
-            <div class="c cred" id="p2u">—</div>
-            <div class="c cred" id="p2a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c indent">Net comm after fees</div>
-            <div class="c cyours" id="p3u">—</div>
-            <div class="c caed" id="p3a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row">
-            <div class="c indent">Boss takes <span id="bossLbl">50</span>% of net</div>
-            <div class="c cmuted" id="p4u">—</div>
-            <div class="c cmuted" id="p4a">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--sky);padding-left:8px">
-            <div class="c" style="font-weight:600">→ Your net commission <span style="font-size:10px;color:var(--muted);font-weight:400">(from USD TT transfer)</span></div>
-            <div class="c cyours" id="p5u" style="font-size:14px">—</div>
-            <div class="c caed" id="p5a" style="font-size:14px">—</div>
-            <div class="c col-usdt cmuted">—</div>
-          </div>
-
-          <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:14px 0 4px">📈 Source 2 — USDT Rate Spread</div>
-          <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--green);padding-left:8px">
-            <div class="c" style="font-weight:600">② USDT spread <span style="font-size:10px;color:var(--muted);font-weight:400">(market rate − Leo's buy rate) × USDT sent</span></div>
-            <div class="c cprofit" id="p6u">—</div>
-            <div class="c caed" id="p6a">—</div>
-            <div class="c col-usdt" id="p6pct" style="font-size:11px;color:var(--muted)"></div>
-          </div>
-
-          <div class="profit-banner">
-            <div class="pb-lbl">💰 Your Total Profit</div>
-            <!-- Total: USD big + AED -->
-            <div style="display:flex;align-items:baseline;justify-content:center;gap:14px;flex-wrap:wrap">
-              <div class="pb-amt" id="totalProfitUSD">—</div>
-              <div style="font-size:22px;font-weight:800;color:var(--sky);opacity:.85" id="totalProfitAED">—</div>
-            </div>
-            <!-- Divider -->
-            <div style="border-top:1px solid var(--bdr);margin:14px 0 12px"></div>
-            <!-- Two columns: commission | spread -->
-            <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0">
-              <!-- Net Commission (USD transfer) -->
-              <div style="text-align:center;padding:0 12px">
-                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">💸 USD Transfer Comm</div>
-                <div style="font-size:9px;color:var(--muted);margin-bottom:6px;opacity:.7">Your % cut after fees &amp; boss split</div>
-                <div style="font-size:20px;font-weight:800;color:var(--sky)" id="bannerNetComm">—</div>
-                <div style="font-size:13px;font-weight:600;color:var(--sky);opacity:.7;margin-top:3px" id="bannerNetCommAED">—</div>
-              </div>
-              <!-- Vertical rule -->
-              <div style="background:var(--bdr)"></div>
-              <!-- Spread (USDT rate diff) -->
-              <div style="text-align:center;padding:0 12px">
-                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">📈 USDT Rate Spread</div>
-                <div style="font-size:9px;color:var(--muted);margin-bottom:6px;opacity:.7">Market rate − Leo's rate × USDT (100% yours)</div>
-                <div style="font-size:20px;font-weight:800;color:var(--green)" id="bannerSpread">—</div>
-                <div style="font-size:13px;font-weight:600;color:var(--green);opacity:.7;margin-top:3px" id="bannerSpreadAED">—</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="sec-hdr">🔁 LEO — USD to USDT Converter</div>
-          <div class="field" style="margin-bottom:10px">
-            <label>Leo wants to receive (USD)</label>
-            <input type="number" id="leoWantsUSD" placeholder="e.g. 260380" class="hl" oninput="calcLeo()">
-            <div class="hint">Enter Leo's target USD amount → see USDT you must send</div>
-          </div>
-          <div class="row2" style="margin-bottom:14px">
-            <div class="field" style="margin-bottom:0">
-              <label>USDT / AED Rate</label>
-              <input type="number" id="leoUsdtRate" placeholder="e.g. 3.67" step=".0001" class="hl" oninput="calcLeo()">
-            </div>
-            <div class="field" style="margin-bottom:0">
-              <label>USD / AED Rate</label>
-              <input type="number" id="leoFxRate" placeholder="e.g. 3.6725" step=".0001" class="hl" oninput="calcLeo()">
-            </div>
-          </div>
-
-          <div id="leoResult" style="display:none;margin-top:14px">
-            <!-- Key numbers -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-              <div class="stat" style="border-color:var(--orange)">
-                <div class="sl">USDT to request from Leo</div>
-                <div class="sv cusdt" id="leoUsdt">—</div>
-                <div class="ss" id="leoTotalAED">—</div>
-              </div>
-              <div class="stat" id="leoSlipStat">
-                <div class="sl">Conversion Slip %</div>
-                <div class="sv" id="leoSlipPct" style="font-size:24px">—</div>
-                <div class="ss" id="leoSlipNote">—</div>
-              </div>
-            </div>
-            <!-- Full breakdown -->
-            <div class="rt-hdr">
-              <div class="c"></div>
-              <div class="c">USD</div>
-              <div class="c">AED</div>
-              <div class="c col-usdt"></div>
-            </div>
-            <div class="rt-row">
-              <div class="c">① Net USD (Leo receives)</div>
-              <div class="c cusd" id="lR_s1u">—</div>
-              <div class="c caed" id="lR_s1a">—</div>
-              <div class="c col-usdt cmuted">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">② Dealer comm (Sunny)</div>
-              <div class="c csunny" id="lR_s2u">—</div>
-              <div class="c caed" id="lR_s2a">—</div>
-              <div class="c col-usdt cmuted">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">③ Your commission</div>
-              <div class="c cyours" id="lR_s3u">—</div>
-              <div class="c caed" id="lR_s3a">—</div>
-              <div class="c col-usdt cmuted">—</div>
-            </div>
-            <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--orange);padding-left:8px">
-              <div class="c" style="font-weight:700">④ Total → USDT from Leo</div>
-              <div class="c cusd" id="lR_s4u">—</div>
-              <div class="c caed" id="lR_s4a">—</div>
-              <div class="c col-usdt cusdt" id="lR_s4t" style="font-weight:900;font-size:14px">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">Spread profit (mkt − buy)</div>
-              <div class="c cprofit" id="lR_sp">—</div>
-              <div class="c caed" id="lR_spa">—</div>
-              <div class="c col-usdt cmuted">—</div>
-            </div>
-            <div class="rt-row">
-              <div class="c indent">Less fees / boss split</div>
-              <div class="c cred" id="lR_fees">—</div>
-              <div class="c cmuted">—</div>
-              <div class="c col-usdt cmuted">—</div>
-            </div>
-            <div class="rt-row" style="background:var(--surf2);border-radius:8px;border-left:3px solid var(--green);padding-left:8px;margin-top:4px">
-              <div class="c" style="font-weight:700">💰 Your Total Profit</div>
-              <div class="c cprofit" id="lR_profit" style="font-size:15px;font-weight:900">—</div>
-              <div class="c caed" id="lR_profitA" style="font-size:14px;font-weight:700">—</div>
-              <div class="c col-usdt cmuted">—</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- TRADING TRACKER -->
-  <div class="panel" id="panel-tracker">
-    <div class="card" style="max-width:420px">
-      <div class="ctitle">📡 Current Rates</div>
-      <div class="row2">
-        <div class="field">
-          <label>Market Rate (AED/USDT)</label>
-          <input type="number" id="tMktRate" value="3.68" step=".0001" class="hl" oninput="calcTracker()">
-          <div class="hint">📈 Current market price of USDT — values your remaining USDT in hand to calculate <strong style="color:var(--orange)">unrealised profit</strong></div>
-        </div>
-        <div class="field">
-          <label>USD / AED Rate</label>
-          <input type="number" id="tUsdAed" value="3.6725" step=".0001" class="hl" oninput="calcTracker()">
-          <div class="hint">💱 FX rate — converts all AED amounts into <strong style="color:var(--green)">USD</strong> for the P&amp;L summary totals</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-row" id="tStatRow"></div>
-
-    <div class="tracker-cols">
-      <div>
-        <div class="card">
-          <div class="ctitle">📥 Purchases</div>
-          <div class="tbl-wrap">
-            <table>
-              <thead><tr><th>#</th><th>USDT</th><th>Buy Rate</th><th>Cost AED</th><th>Date</th><th>From</th><th></th></tr></thead>
-              <tbody id="buyBody"></tbody>
-            </table>
-          </div>
-          <button class="add-row" onclick="addBuy()">+ Add Purchase</button>
-        </div>
-      </div>
-      <div>
-        <div class="card">
-          <div class="ctitle">📤 Sales</div>
-          <div class="tbl-wrap">
-            <table>
-              <thead><tr><th>#</th><th>USDT</th><th>Sell Rate</th><th>Value AED</th><th>Date</th><th>Buyer</th><th></th></tr></thead>
-              <tbody id="sellBody"></tbody>
-            </table>
-          </div>
-          <button class="add-row" onclick="addSell()">+ Add Sale</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ctitle">💰 P&amp;L Summary</div>
-      <div class="pnl-cols" id="pnlCols"></div>
-    </div>
-  </div>
-
-  <!-- SAVED DEALS -->
-  <div class="panel" id="panel-deals">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-size:18px;font-weight:800">📁 Saved Deals</div>
-    </div>
-    <div id="dealList">
-      <div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.<br>Calculate a deal and hit <strong>Save</strong>.</div>
-    </div>
-  </div>
-
-  <!-- PAYMENT SCHEDULE -->
-  <div class="panel" id="panel-payments">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
-        <div style="font-size:18px;font-weight:800">🗓️ Payment Schedule</div>
-        <div style="font-size:12px;color:var(--muted);background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:4px 10px">
-          AED values at <strong style="color:var(--sky)" id="pmtFxLabel">3.67</strong> USD/AED
-          <span style="color:var(--muted);margin-left:4px;font-size:10px">(from Tracker rate)</span>
-        </div>
-      </div>
-      <button class="btn btn-p btn-sm" onclick="addPayment()">+ Add Payment</button>
-    </div>
-
-    <!-- Summary strip -->
-    <div class="stat-row" id="pmtStatRow" style="margin-bottom:16px"></div>
-
-    <div class="card" style="padding:0;overflow:hidden">
-      <div class="tbl-wrap" style="border:none;border-radius:0">
-        <table id="pmtTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Amount Sent (USD)</th>
-              <th>AED Value</th>
-              <th>Date</th>
-              <th style="text-align:center">Received ✓</th>
-              <th>TT Fees (USD)</th>
-              <th>Notes</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="pmtBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="pmtEmpty" style="text-align:center;padding:60px 20px;color:var(--muted);display:none">
-      No payments yet. Hit <strong>+ Add Payment</strong> to start.
-    </div>
-  </div>
-
-</div><!-- /#app -->
-
-<!-- SETTINGS MODAL -->
-<div class="overlay" id="settingsOverlay" style="display:none" onclick="overlayClick(event)">
-  <div class="modal">
-    <div class="modal-title">⚙️ Settings</div>
-
-    <div class="ctitle">🔄 Cross-Device Sync — GitHub Gist</div>
-    <div class="sync-help">
-      <strong>Setup (3 min, free):</strong><br>
-      1. <a href="https://github.com" target="_blank">github.com</a> → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → tick <strong>gist</strong> → copy token<br>
-      2. <a href="https://gist.github.com" target="_blank">gist.github.com</a> → New gist → filename: <code>usdt.json</code> → content: <code>{}</code> → Create secret gist → copy the ID from the URL
-    </div>
-
-    <div class="field">
-      <label>GitHub Personal Access Token</label>
-      <input type="text" id="sMasterKey" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveSettings()">
-    </div>
-    <div class="field">
-      <label>Gist ID</label>
-      <input type="text" id="sBinId" placeholder="abc123def456..." oninput="saveSettings()">
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-      <button class="btn btn-p btn-sm" onclick="syncNow()">↻ Sync Now</button>
-      <button class="btn btn-g btn-sm" onclick="testConn()">🔌 Test</button>
-    </div>
-    <div class="sync-msg" id="syncMsg"></div>
-
-    <hr class="div">
-    <div class="ctitle">🔐 Change PIN</div>
-    <div class="row2" style="margin-bottom:8px;align-items:end">
-      <div class="field" style="margin-bottom:0">
-        <label>New 4-Digit PIN</label>
-        <input type="number" id="newPin" placeholder="e.g. 1234">
-      </div>
-      <button class="btn btn-g btn-sm" onclick="changePin()">Set PIN</button>
-    </div>
-
-    <hr class="div">
-    <div class="ctitle">🗂️ Data</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-g btn-sm" onclick="exportJSON()">📤 Export</button>
-      <button class="btn btn-g btn-sm" onclick="importJSON()">📥 Import</button>
-      <button class="btn btn-sm btn-danger" onclick="clearAll()">🗑️ Clear All</button>
-    </div>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
-
-    <hr class="div">
-    <button class="btn btn-g" style="width:100%" onclick="closeSettings()">Close</button>
-  </div>
-</div>
-
-<script>
-// ── STATE ──
-let S = {
-  buys:[], sells:[], deals:[], payments:[],
-  settings:{pin:'8888',masterKey:'',binId:''},
-  calc:{}, tRates:{}
-};
-let pinBuf='', syncTimer=null, debounceSave=null;
-const LS_KEY='usdt_v3';
-
-// ── PIN ──
-function pk(k){
-  if(k==='X'){pinBuf='';}
-  else if(k==='B'){pinBuf=pinBuf.slice(0,-1);}
-  else if(pinBuf.length<4){pinBuf+=k;}
-  renderDots();
-  if(pinBuf.length===4){
-    setTimeout(()=>{
-      if(pinBuf===(S.settings?.pin||'8888')){unlock();}
-      else{
-        document.getElementById('pinErr').textContent='Incorrect PIN';
-        pinBuf='';renderDots();
-        setTimeout(()=>{document.getElementById('pinErr').textContent='';},1500);
-      }
-    },180);
-  }
-}
-function renderDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('on',i<pinBuf.length);}
-
-function unlock(){
-  document.getElementById('pinScreen').style.display='none';
-  document.getElementById('app').style.display='block';
-  loadState(); calc(); calcTracker(); renderDeals(); renderPayments();
-  document.getElementById('sMasterKey').value=S.settings?.masterKey||'';
-  document.getElementById('sBinId').value=S.settings?.binId||'';
-  startSync();
-}
-function lockApp(){
-  pinBuf='';renderDots();
-  document.getElementById('pinScreen').style.display='flex';
-  document.getElementById('app').style.display='none';
-  if(syncTimer)clearInterval(syncTimer);
-}
-
-document.addEventListener('keydown',e=>{
-  if(document.getElementById('pinScreen').style.display!=='none'){
-    if(e.key>='0'&&e.key<='9')pk(e.key);
-    if(e.key==='Backspace')pk('B');
-    if(e.key==='Escape')pk('X');
-  }
-});
-
-// ── PERSIST ──
-function loadState(){
-  try{const d=localStorage.getItem(LS_KEY);if(d){const p=JSON.parse(d);S={...S,...p};}}catch(e){}
-  if(!S.buys||S.buys.length===0)seedExcelData();
-  if(S.tRates?.mktRate)setVal('tMktRate',S.tRates.mktRate);
-  if(S.tRates?.usdAed)setVal('tUsdAed',S.tRates.usdAed);
-  const c=S.calc||{};
-  ['netUSD','usdAed','buyRate','mktRate','dealerPct','yourPct','fees','bossPct'].forEach(k=>{if(c[k]!==undefined)setVal(k,c[k]);});
-  renderBuys();renderSells();
-}
-
-function persist(){
-  S.calc={netUSD:n('netUSD'),usdAed:n('usdAed'),buyRate:n('buyRate'),mktRate:n('mktRate'),dealerPct:n('dealerPct'),yourPct:n('yourPct'),fees:n('fees'),bossPct:n('bossPct')};
-  S.tRates={mktRate:n('tMktRate'),usdAed:n('tUsdAed')};
-  localStorage.setItem(LS_KEY,JSON.stringify(S));
-  if(debounceSave)clearTimeout(debounceSave);
-  debounceSave=setTimeout(pushCloud,4000);
-}
-
-function setVal(id,v){const el=document.getElementById(id);if(el)el.value=v;}
-function n(id){return parseFloat(document.getElementById(id)?.value)||0;}
-function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function f(v,d=2){if(v===null||v===undefined||isNaN(v)||!isFinite(v))return '—';return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
-function s(id,v,d=2){const el=document.getElementById(id);if(el)el.textContent=(isNaN(v)||!isFinite(v))?'—':f(v,d);}
-function today(){return new Date().toISOString().slice(0,10);}
-function toISODate(d){
-  if(!d)return today();
-  if(/^\d{4}-\d{2}-\d{2}$/.test(d))return d;
-  // Handle "14/May/2026" or "14/05/2026" style
-  try{const dt=new Date(d);if(!isNaN(dt))return dt.toISOString().slice(0,10);}catch(e){}
-  return today();
-}
-
-function seedExcelData(){
-  S.buys=[
-    {id:1,amt:314940,rate:3.65,date:'14/May/2026',notes:'LEO'},
-    {id:2,amt:17000,rate:3.67,date:'20/May/2026',notes:'Sunny'},
-    {id:3,amt:16400,rate:3.67,date:'22/May/2026',notes:'Sunny'},
-    {id:4,amt:270275,rate:3.65,date:'27/May/2026',notes:'LEO'},
-  ];
-  S.sells=[
-    {id:101,amt:200000,rate:3.672,date:'14/May/2026',buyer:'faleel'},
-    {id:102,amt:60603,rate:3.69,date:'15/May/2026',buyer:'naveed'},
-    {id:103,amt:5000,rate:3.69,date:'16/May/2026',buyer:'naveed'},
-    {id:104,amt:3794,rate:3.69,date:'17/May/2026',buyer:'naveed'},
-    {id:105,amt:13500,rate:3.69,date:'17/May/2026',buyer:'naveed'},
-    {id:106,amt:13000,rate:3.69,date:'20/May/2026',buyer:'naveed'},
-    {id:107,amt:13300,rate:3.69,date:'21/May/2026',buyer:'naveed'},
-    {id:108,amt:2700,rate:3.69,date:'25/May/2026',buyer:'naveed'},
-    {id:109,amt:6493,rate:3.69,date:'26/May/2026',buyer:'naveed'},
-  ];
-  S.deals=[
-    {id:1001,name:'Deal #1 — 303,620 USD',date:'2026-05-14T00:00:00.000Z',inputs:{netUSD:303620,usdAed:3.67,buyRate:3.644,mktRate:3.67,dealerPct:2,yourPct:1,fees:0,bossPct:50},profitUSD:3749.42,usdt:314959.92},
-    {id:1002,name:'Deal #2 — 260,380 USD',date:'2026-05-27T00:00:00.000Z',inputs:{netUSD:260380,usdAed:3.67,buyRate:3.642,mktRate:3.67,dealerPct:2,yourPct:1,fees:400,bossPct:50},profitUSD:3163.78,usdt:270253.28},
-  ];
-}
-
-// ── CALCULATOR ──
-function calc(){
-  const netUSD=n('netUSD'),usdAed=n('usdAed'),dPct=n('dealerPct')/100,yPct=n('yourPct')/100;
-  const buyRate=n('buyRate'),mktRate=n('mktRate'),fees=n('fees'),bossPct=n('bossPct')/100;
-  if(!netUSD||!usdAed||!buyRate){persist();return;}
-  const netAED=netUSD*usdAed,dUSD=netUSD*dPct,dAED=dUSD*usdAed,yUSD=netUSD*yPct,yAED=yUSD*usdAed;
-  const totUSD=netUSD+dUSD+yUSD,totAED=totUSD*usdAed,usdt=totAED/buyRate;
-  const sunnyUSD=netUSD+dUSD,sunnyAED=sunnyUSD*usdAed;
-  const feesAED=fees*usdAed,netComm=yUSD-fees,netCommAED=yAED-feesAED;
-  const bossUSD=netComm*bossPct,bossAED=netCommAED*bossPct;
-  const myNetUSD=netComm-bossUSD,myNetAED=netCommAED-bossAED;
-  const spreadR=mktRate-buyRate,spreadAED=spreadR*usdt,spreadUSD=spreadAED/usdAed;
-  const spreadPct=buyRate>0?spreadR/buyRate*100:0;
-  const totalPUSD=myNetUSD+spreadUSD,totalPAED=myNetAED+spreadAED;
-
-  s('s1u',netUSD);s('s1a',netAED);s('s2u',dUSD);s('s2a',dAED);s('s3u',yUSD);s('s3a',yAED);
-  s('s4u',totUSD);s('s4a',totAED);s('s5u',totUSD);s('s5a',totAED);s('s5t',usdt,2);
-  s('mf1a',totAED);s('mf1t',usdt,2);s('mf2u',netUSD);s('mf2a',netAED);
-  s('mf3u',sunnyUSD);s('mf3a',sunnyAED);s('mf4u',yUSD);s('mf4a',yAED);
-  s('p1u',yUSD);s('p1a',yAED);
-  document.getElementById('p1n').textContent=netUSD>0?`${f(n('yourPct'),1)}% of ${f(netUSD,0)}`:'';
-  s('p2u',-fees);s('p2a',-feesAED);s('p3u',netComm);s('p3a',netCommAED);
-  s('p4u',bossUSD);s('p4a',bossAED);s('p5u',myNetUSD);s('p5a',myNetAED);
-  s('p6u',spreadUSD);s('p6a',spreadAED);
-  document.getElementById('p6pct').textContent=spreadPct.toFixed(2)+'% spread';
-  document.getElementById('bossLbl').textContent=Math.round(n('bossPct'));
-  const yl2=document.getElementById('yourPctLbl2');if(yl2)yl2.textContent=n('yourPct');
-  document.getElementById('totalProfitUSD').textContent='$'+f(totalPUSD);
-  document.getElementById('totalProfitAED').textContent=f(totalPAED)+' AED';
-  const bnc=document.getElementById('bannerNetComm');    if(bnc)bnc.textContent='$'+f(myNetUSD);
-  const bncA=document.getElementById('bannerNetCommAED');if(bncA)bncA.textContent=f(myNetAED)+' AED';
-  const bns=document.getElementById('bannerSpread');     if(bns)bns.textContent='$'+f(spreadUSD);
-  const bnsA=document.getElementById('bannerSpreadAED'); if(bnsA)bnsA.textContent=f(spreadAED)+' AED';
-  document.getElementById('qs-usdt').textContent=f(usdt,0)+' USDT';
-  document.getElementById('qs-aed').textContent=f(totAED,0)+' AED';
-  document.getElementById('qs-sunny').textContent='$'+f(sunnyUSD,0);
-  document.getElementById('qs-profit').textContent='$'+f(totalPUSD);
-  // Sync Leo converter rate fields from main calc
-  const leoUR=document.getElementById('leoUsdtRate'); if(leoUR&&!leoUR.value&&mktRate)leoUR.value=mktRate;
-  const leoFR=document.getElementById('leoFxRate');   if(leoFR&&!leoFR.value&&usdAed)leoFR.value=usdAed;
-  calcLeo();
-
-  persist();
-}
-
-// ── LEO CONVERTER — full deal formula ──
-function calcLeo(){
-  const netUSD  = parseFloat(document.getElementById('leoWantsUSD')?.value)||0;
-  // Pull rates from Leo fields, fall back to main calc inputs
-  const usdAed  = parseFloat(document.getElementById('leoFxRate')?.value)  ||n('usdAed')||0;
-  const buyRate = parseFloat(document.getElementById('leoUsdtRate')?.value) ||n('buyRate')||0;
-  const mktRate = n('mktRate')||buyRate;
-  const dPct    = n('dealerPct')/100;
-  const yPct    = n('yourPct')/100;
-  const fees    = n('fees');
-  const bossPct = n('bossPct')/100;
-  const res     = document.getElementById('leoResult');
-
-  if(!netUSD||!usdAed||!buyRate){if(res)res.style.display='none';return;}
-
-  // ── Same formula as main calc ──
-  const netAED   = netUSD * usdAed;
-  const dUSD     = netUSD * dPct,   dAED = dUSD * usdAed;
-  const yUSD     = netUSD * yPct,   yAED = yUSD * usdAed;
-  const totUSD   = netUSD + dUSD + yUSD;
-  const totAED   = totUSD * usdAed;
-  const usdt     = totAED / buyRate;                        // USDT to request from Leo
-  const spreadAED= (mktRate - buyRate) * usdt;
-  const spreadUSD= spreadAED / usdAed;
-  const netComm  = (yUSD - fees) * (1 - bossPct);
-  const netCommA = netComm * usdAed;
-  const totalP   = netComm + spreadUSD;
-  const totalPA  = totalP * usdAed;
-  const feesBoss = (yUSD - netComm);                       // fees + boss share
-  // Slip = extra USDT vs face USD amount
-  const slipPct  = (usdt / netUSD - 1) * 100;
-  const isLoss   = slipPct > 0;
-  const slipColor= isLoss ? 'var(--red)' : 'var(--green)';
-
-  const T=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  const C=(id,c)=>{const e=document.getElementById(id);if(e)e.style.color=c;};
-
-  T('leoUsdt',    f(usdt,2)+' USDT');
-  T('leoTotalAED','Total AED: '+f(totAED,0));
-  T('leoSlipPct', (slipPct>=0?'+':'')+slipPct.toFixed(4)+'%');
-  T('leoSlipNote', isLoss ? 'You send more USDT than face USD' : 'You send less USDT than face USD');
-  C('leoSlipPct', slipColor);
-  const ss=document.getElementById('leoSlipStat');
-  if(ss){ss.style.borderColor=slipColor;ss.style.background=isLoss?'rgba(248,113,113,.06)':'rgba(34,197,94,.06)';}
-
-  T('lR_s1u','$'+f(netUSD));    T('lR_s1a',f(netAED)+' AED');
-  T('lR_s2u','$'+f(dUSD));      T('lR_s2a',f(dAED)+' AED');
-  T('lR_s3u','$'+f(yUSD));      T('lR_s3a',f(yAED)+' AED');
-  T('lR_s4u','$'+f(totUSD));    T('lR_s4a',f(totAED)+' AED');  T('lR_s4t',f(usdt,2)+' USDT');
-  T('lR_sp', '$'+f(spreadUSD)); T('lR_spa', f(spreadAED)+' AED');
-  T('lR_fees','-$'+f(feesBoss));
-  T('lR_profit','$'+f(totalP)); C('lR_profit','var(--green)');
-  T('lR_profitA',f(totalPA)+' AED'); C('lR_profitA','var(--sky)');
-
-  if(res)res.style.display='block';
-}
-
-// ── DEALS ──
-function saveDeal(){
-  const name=document.getElementById('dealName').value.trim()||`Deal — ${new Date().toLocaleDateString()}`;
-  const inputs={netUSD:n('netUSD'),usdAed:n('usdAed'),buyRate:n('buyRate'),mktRate:n('mktRate'),dealerPct:n('dealerPct'),yourPct:n('yourPct'),fees:n('fees'),bossPct:n('bossPct')};
-  const i=inputs,totAED=i.netUSD*(1+i.dealerPct/100+i.yourPct/100)*i.usdAed,usdt=totAED/i.buyRate;
-  const myNet=(i.netUSD*i.yourPct/100-i.fees)*(1-i.bossPct/100),spread=(i.mktRate-i.buyRate)*usdt/i.usdAed;
-  if(!S.deals)S.deals=[];
-  S.deals.unshift({id:Date.now(),name,date:new Date().toISOString(),inputs,profitUSD:myNet+spread,usdt});
-  persist();renderDeals();document.getElementById('dealName').value='';
-  goTab('deals',document.querySelectorAll('.tb')[2]);
-}
-
-function renderDeals(){
-  const c=document.getElementById('dealList');
-  if(!S.deals||!S.deals.length){c.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)">No saved deals yet.</div>';return;}
-  c.innerHTML=S.deals.map(d=>`
-    <div class="deal-card" onclick="loadDeal(${d.id})">
-      <div class="deal-card-top">
-        <div class="deal-name">${h(d.name)}</div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:11px;color:var(--muted)">${new Date(d.date).toLocaleDateString()}</span>
-          <button onclick="event.stopPropagation();deleteDeal(${d.id})" style="background:transparent;border:none;color:var(--red);cursor:pointer;font-size:18px;line-height:1">×</button>
-        </div>
-      </div>
-      <div class="deal-pills">
-        <div class="deal-pill"><span>Client: </span><strong>$${f(d.inputs.netUSD,0)}</strong></div>
-        <div class="deal-pill"><span>USDT: </span><strong>${f(d.usdt,0)}</strong></div>
-        <div class="deal-pill"><span>Buy rate: </span><strong>${d.inputs.buyRate}</strong></div>
-        <div class="deal-pill"><span>Profit: </span><strong style="color:var(--green)">$${f(d.profitUSD)}</strong></div>
-      </div>
-    </div>`).join('');
-}
-
-function loadDeal(id){
-  const d=S.deals.find(x=>x.id==id);if(!d)return;
-  const i=d.inputs;
-  ['netUSD','usdAed','buyRate','mktRate','dealerPct','yourPct','fees','bossPct'].forEach(k=>setVal(k,i[k]));
-  document.getElementById('dealName').value=d.name;
-  calc();goTab('calc',document.querySelectorAll('.tb')[0]);
-}
-function deleteDeal(id){if(!confirm('Delete?'))return;S.deals=S.deals.filter(x=>x.id!=id);persist();renderDeals();}
-
-// ── TRACKER ──
-function addBuy(){if(!S.buys)S.buys=[];S.buys.push({id:Date.now(),amt:0,rate:3.65,date:today(),notes:''});renderBuys();calcTracker();}
-function addSell(){if(!S.sells)S.sells=[];S.sells.push({id:Date.now(),amt:0,rate:3.68,date:today(),buyer:''});renderSells();calcTracker();}
-
-function renderBuys(){
-  const b=document.getElementById('buyBody');if(!b)return;if(!S.buys)S.buys=[];
-  b.innerHTML=S.buys.map((p,i)=>`<tr>
-    <td style="color:var(--muted)">${i+1}</td>
-    <td><input type="number" value="${p.amt}" onchange="updBuy(${p.id},'amt',this.value)" style="min-width:80px"></td>
-    <td><input type="number" value="${p.rate}" step=".0001" onchange="updBuy(${p.id},'rate',this.value)" style="min-width:65px"></td>
-    <td style="color:var(--sky);font-weight:700;white-space:nowrap">${f(p.amt*p.rate,0)}</td>
-    <td><input type="date" value="${toISODate(p.date)}" onchange="updBuy(${p.id},'date',this.value)" style="min-width:130px"></td>
-    <td><input type="text" value="${h(p.notes)}" onchange="updBuy(${p.id},'notes',this.value)" style="min-width:60px" placeholder="LEO / Sunny"></td>
-    <td><button class="del-btn" onclick="delBuy(${p.id})">×</button></td>
-  </tr>`).join('');
-}
-function renderSells(){
-  const b=document.getElementById('sellBody');if(!b)return;if(!S.sells)S.sells=[];
-  b.innerHTML=S.sells.map((p,i)=>`<tr>
-    <td style="color:var(--muted)">${i+1}</td>
-    <td><input type="number" value="${p.amt}" onchange="updSell(${p.id},'amt',this.value)" style="min-width:80px"></td>
-    <td><input type="number" value="${p.rate}" step=".0001" onchange="updSell(${p.id},'rate',this.value)" style="min-width:65px"></td>
-    <td style="color:var(--green);font-weight:700;white-space:nowrap">${f(p.amt*p.rate,0)}</td>
-    <td><input type="date" value="${toISODate(p.date)}" onchange="updSell(${p.id},'date',this.value)" style="min-width:130px"></td>
-    <td><input type="text" value="${h(p.buyer)}" onchange="updSell(${p.id},'buyer',this.value)" style="min-width:60px" placeholder="name..."></td>
-    <td><button class="del-btn" onclick="delSell(${p.id})">×</button></td>
-  </tr>`).join('');
-}
-function updBuy(id,f2,v){const p=S.buys.find(x=>x.id==id);if(p){p[f2]=(f2==='amt'||f2==='rate')?parseFloat(v)||0:v;renderBuys();calcTracker();persist();}}
-function updSell(id,f2,v){const p=S.sells.find(x=>x.id==id);if(p){p[f2]=(f2==='amt'||f2==='rate')?parseFloat(v)||0:v;renderSells();calcTracker();persist();}}
-function delBuy(id){S.buys=S.buys.filter(x=>x.id!=id);renderBuys();calcTracker();persist();}
-function delSell(id){S.sells=S.sells.filter(x=>x.id!=id);renderSells();calcTracker();persist();}
-
-function calcTracker(){
-  const buys=S.buys||[],sells=S.sells||[];
-  const mkt=n('tMktRate')||3.68,ua=n('tUsdAed')||3.6725;
-  const totB=buys.reduce((a,b)=>a+(b.amt||0),0),totS=sells.reduce((a,s)=>a+(s.amt||0),0),rem=totB-totS;
-  const totCA=buys.reduce((a,b)=>a+(b.amt*b.rate),0),avgB=totB>0?totCA/totB:0;
-  const totRA=sells.reduce((a,s)=>a+(s.amt*s.rate),0),avgS=totS>0?totRA/totS:0;
-  const costS=avgB*totS,rPA=totRA-costS,rPU=rPA/ua,rM=totRA>0?rPA/totRA*100:0;
-  const mktV=rem*mkt,costR=avgB*rem,uPA=mktV-costR,uPU=uPA/ua;
-  const tPA=rPA+uPA,tPU=rPU+uPU;
-
-  const sr=document.getElementById('tStatRow');
-  if(sr)sr.innerHTML=`
-    <div class="stat"><div class="sl">USDT Purchased</div><div class="sv cusdt">${f(totB,0)}</div><div class="ss">Avg buy: ${avgB.toFixed(4)}</div></div>
-    <div class="stat"><div class="sl">USDT Sold</div><div class="sv cusd">${f(totS,0)}</div><div class="ss">Avg sell: ${avgS.toFixed(4)}</div></div>
-    <div class="stat"><div class="sl">USDT in Hand</div><div class="sv caed">${f(rem,0)}</div><div class="ss">Value: ${f(mktV,0)} AED</div></div>
-    <div class="stat"><div class="sl">Realised Profit</div><div class="sv" style="color:${rPA>=0?'var(--green)':'var(--red)'}">${f(rPA,0)} AED</div><div class="ss">$${f(rPU)} · ${rM.toFixed(2)}%</div></div>
-    <div class="stat"><div class="sl">Unrealised Profit</div><div class="sv" style="color:${uPA>=0?'var(--green)':'var(--red)'}">${f(uPA,0)} AED</div><div class="ss">$${f(uPU)}</div></div>
-    <div class="stat" style="border-color:${tPA>=0?'var(--green)':'var(--red)'}"><div class="sl">💰 Total P&L</div><div class="sv" style="color:${tPA>=0?'var(--green)':'var(--red)'};font-size:22px">${f(tPA,0)} AED</div><div class="ss">$${f(tPU)}</div></div>`;
-
-  const pc=document.getElementById('pnlCols');
-  if(pc)pc.innerHTML=`
-    <div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📥 Purchases</div>
-      <div class="pnl-row"><span class="k">Total USDT</span><span class="v cusdt">${f(totB,0)}</span></div>
-      <div class="pnl-row"><span class="k">Total cost (AED)</span><span class="v caed">${f(totCA,0)}</span></div>
-      <div class="pnl-row"><span class="k">Avg buy rate</span><span class="v">${avgB.toFixed(4)}</span></div>
-    </div>
-    <div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📤 Sales</div>
-      <div class="pnl-row"><span class="k">Total USDT sold</span><span class="v cusd">${f(totS,0)}</span></div>
-      <div class="pnl-row"><span class="k">Total revenue (AED)</span><span class="v cprofit">${f(totRA,0)}</span></div>
-      <div class="pnl-row"><span class="k">Avg sell rate</span><span class="v">${avgS.toFixed(4)}</span></div>
-    </div>
-    <div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-weight:700">📈 P&L</div>
-      <div class="pnl-row"><span class="k">Realised</span><span class="v" style="color:${rPA>=0?'var(--green)':'var(--red)'}">${f(rPA,0)} AED <span style="font-size:11px;color:var(--muted)">/ $${f(rPU)}</span></span></div>
-      <div class="pnl-row"><span class="k">Unrealised</span><span class="v" style="color:${uPA>=0?'var(--green)':'var(--red)'}">${f(uPA,0)} AED <span style="font-size:11px;color:var(--muted)">/ $${f(uPU)}</span></span></div>
-      <div class="pnl-row"><span class="k"><strong>Total</strong></span><span class="v" style="color:${tPA>=0?'var(--green)':'var(--red)'};font-size:15px">${f(tPA,0)} AED <span style="font-size:11px;color:var(--muted)">/ $${f(tPU)}</span></span></div>
-    </div>`;
-  persist();
-}
-
-// ── TABS ──
-function goTab(id,btn){
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+id)?.classList.add('active');
-  if(btn)btn.classList.add('active');
-}
-
-// ── SETTINGS ──
-function openSettings(){document.getElementById('settingsOverlay').style.display='flex';}
-function closeSettings(){document.getElementById('settingsOverlay').style.display='none';}
-function overlayClick(e){if(e.target===document.getElementById('settingsOverlay'))closeSettings();}
-function saveSettings(){
-  S.settings=S.settings||{};
-  S.settings.masterKey=document.getElementById('sMasterKey').value.trim();
-  S.settings.binId=document.getElementById('sBinId').value.trim();
-  localStorage.setItem(LS_KEY,JSON.stringify(S));
-}
-function changePin(){
-  const p=document.getElementById('newPin').value.trim();
-  if(!/^\d{4}$/.test(p)){alert('PIN must be 4 digits');return;}
-  S.settings.pin=p;saveSettings();alert('PIN updated!');document.getElementById('newPin').value='';
-}
-let isSyncing=false;
-function setSyncPill(cls,icon,label){
-  const el=document.getElementById('syncPill');
-  el.className='sync-pill'+(cls?' '+cls:'');
-  const ic=document.getElementById('syncIcon');
-  const lb=document.getElementById('syncLabel');
-  if(ic)ic.className=cls==='busy'?'spin':'';
-  if(ic)ic.textContent=icon||'↻';
-  if(lb)lb.textContent=label?' '+label:'';
-}
-function syncMsg(txt,color='var(--green)'){const el=document.getElementById('syncMsg');if(el)el.innerHTML=`<span style="color:${color}">${txt}</span>`;}
-
-async function tapSync(){
-  if(isSyncing)return;
-  const{masterKey,binId}=S.settings||{};
-  if(!masterKey||!binId){openSettings();return;}
-  isSyncing=true;
-  setSyncPill('busy','↻','Syncing…');
-  try{
-    await pushCloud();
-    await pullCloud(false);
-    setSyncPill('ok','✓',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-  }catch(e){
-    setSyncPill('err','✕','Error');
-    syncMsg('Sync error: '+e.message,'var(--red)');
-  }finally{
-    isSyncing=false;
-  }
-}
-
-// ── SYNC (GitHub Gist) ──
-function startSync(){
-  if(syncTimer)clearInterval(syncTimer);
-  const{masterKey,binId}=S.settings||{};
-  if(masterKey&&binId)setTimeout(()=>tapSync(),800);
-  syncTimer=setInterval(()=>{
-    const{masterKey,binId}=S.settings||{};
-    if(masterKey&&binId&&!isSyncing){isSyncing=true;pushCloud().then(()=>pullCloud(false)).finally(()=>{isSyncing=false;});}
-  },60000);
-}
-
-async function pushCloud(){
-  const{masterKey,binId}=S.settings||{};if(!masterKey||!binId)return;
-  const payload={buys:S.buys,sells:S.sells,deals:S.deals,payments:S.payments,calc:S.calc,tRates:S.tRates,ts:Date.now()};
-  const r=await fetch(`https://api.github.com/gists/${binId}`,{
-    method:'PATCH',
-    headers:{'Content-Type':'application/json','Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'},
-    body:JSON.stringify({files:{'usdt.json':{content:JSON.stringify(payload)}}})
-  });
-  if(!r.ok){
-    const e=await r.json().catch(()=>({}));
-    throw new Error('Push failed '+r.status+': '+(e.message||'check token scope'));
-  }
-}
-
-async function pullCloud(showMsg=true){
-  const{masterKey,binId}=S.settings||{};
-  if(!masterKey||!binId){setSyncPill('','↻','Setup Sync');return;}
-  try{
-    const r=await fetch(`https://api.github.com/gists/${binId}`,{
-      headers:{'Authorization':'token '+masterKey,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(r.ok){
-      const gist=await r.json();
-      const raw=gist.files?.['usdt.json']?.content;
-      if(!raw){if(showMsg)syncMsg('Connected — no data yet','var(--orange)');return;}
-      const remote=JSON.parse(raw),settings=S.settings;
-      if(remote.buys)S.buys=remote.buys;if(remote.sells)S.sells=remote.sells;
-      if(remote.deals)S.deals=remote.deals;if(remote.payments)S.payments=remote.payments;if(remote.calc)S.calc=remote.calc;
-      if(remote.tRates)S.tRates=remote.tRates;
-      S.settings=settings;localStorage.setItem(LS_KEY,JSON.stringify(S));
-      renderBuys();renderSells();renderDeals();renderPayments();calcTracker();
-      if(remote.tRates?.mktRate)setVal('tMktRate',remote.tRates.mktRate);
-      if(remote.tRates?.usdAed)setVal('tUsdAed',remote.tRates.usdAed);
-      if(remote.calc){
-        const c=remote.calc;
-        ['netUSD','usdAed','buyRate','mktRate','dealerPct','yourPct','fees','bossPct'].forEach(k=>{if(c[k]!==undefined)setVal(k,c[k]);});
-        calc();
-      }
-      setSyncPill('ok','✓',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-      if(showMsg)syncMsg('✓ Synced from GitHub');
-    }else{
-      const e=await r.json();
-      setSyncPill('err','✕',r.status);
-      if(showMsg)syncMsg('Error '+r.status+': '+(e.message||'check token & Gist ID'),'var(--red)');
-    }
-  }catch(e){setSyncPill('err','✕','Offline');if(showMsg)syncMsg('No connection','var(--red)');}
-}
-
-async function syncNow(){syncMsg('Syncing…','var(--orange)');await tapSync();}
-async function testConn(){syncMsg('Testing…','var(--orange)');await pullCloud(true);}
-
-// ── EXPORT/IMPORT ──
-function exportJSON(){
-  const blob=new Blob([JSON.stringify({buys:S.buys,sells:S.sells,deals:S.deals,calc:S.calc,tRates:S.tRates},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='usdt-calc-'+new Date().toISOString().slice(0,10)+'.json';a.click();
-}
-function importJSON(){document.getElementById('importFile').click();}
-function handleImport(e){
-  const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.buys)S.buys=d.buys;if(d.sells)S.sells=d.sells;if(d.deals)S.deals=d.deals;persist();renderBuys();renderSells();calcTracker();renderDeals();alert('Imported!');}catch(err){alert('Invalid file');}};
-  r.readAsText(file);
-}
-function clearAll(){if(!confirm('Delete ALL data?'))return;S.buys=[];S.sells=[];S.deals=[];S.payments=[];persist();renderBuys();renderSells();calcTracker();renderDeals();renderPayments();}
-
-// ── PAYMENT SCHEDULE ──
-function addPayment(){
-  if(!S.payments)S.payments=[];
-  S.payments.push({id:Date.now(),amt:0,date:today(),confirmed:false,ttFees:0,notes:''});
-  renderPayments();persist();
-}
-function delPayment(id){if(!confirm('Delete?'))return;S.payments=S.payments.filter(x=>x.id!=id);renderPayments();persist();}
-function updPayment(id,field,val){
-  const p=S.payments.find(x=>x.id==id);if(!p)return;
-  if(field==='amt'||field==='ttFees')p[field]=parseFloat(val)||0;
-  else if(field==='confirmed')p[field]=val;
-  else p[field]=val;
-  renderPayments();persist();
-}
-
-function renderPayments(){
-  if(!S.payments)S.payments=[];
-  const tbody=document.getElementById('pmtBody');
-  const empty=document.getElementById('pmtEmpty');
-  const tbl=document.getElementById('pmtTable');
-  if(!tbody)return;
-
-  if(!S.payments.length){
-    if(tbl)tbl.style.display='none';
-    if(empty)empty.style.display='block';
-    renderPmtStats();return;
-  }
-  if(tbl)tbl.style.display='table';
-  if(empty)empty.style.display='none';
-
-  const fxRate=n('tUsdAed')||n('usdAed')||3.67;
-  const lbl=document.getElementById('pmtFxLabel');if(lbl)lbl.textContent=fxRate.toFixed(4);
-  tbody.innerHTML=S.payments.map((p,i)=>{
-    const aed=(p.amt||0)*fxRate;
-    return `<tr style="${p.confirmed?'opacity:.65':''}">
-    <td style="color:var(--muted);font-size:12px">${i+1}</td>
-    <td><input type="number" value="${p.amt||''}" placeholder="0.00" onchange="updPayment(${p.id},'amt',this.value)" style="min-width:110px"></td>
-    <td style="color:var(--sky);font-weight:700;white-space:nowrap;font-size:13px">${aed>0?f(aed,0)+' AED':'—'}</td>
-    <td><input type="date" value="${toISODate(p.date)}" onchange="updPayment(${p.id},'date',this.value)" style="min-width:130px"></td>
-    <td style="text-align:center">
-      <button class="pmt-toggle${p.confirmed?' on':''}" onclick="updPayment(${p.id},'confirmed',${!p.confirmed})" title="${p.confirmed?'Confirmed':'Pending'}"></button>
-      <div style="font-size:9px;color:${p.confirmed?'var(--green)':'var(--muted)'};margin-top:4px;font-weight:700">${p.confirmed?'CONFIRMED':'PENDING'}</div>
-    </td>
-    <td><input type="number" value="${p.ttFees||''}" placeholder="0" onchange="updPayment(${p.id},'ttFees',this.value)" style="min-width:80px"></td>
-    <td><input type="text" value="${h(p.notes||'')}" placeholder="Optional notes…" onchange="updPayment(${p.id},'notes',this.value)" style="min-width:140px"></td>
-    <td><button class="del-btn" onclick="delPayment(${p.id})">×</button></td>
-  </tr>`;}).join('');
-
-  renderPmtStats();
-}
-
-function renderPmtStats(){
-  if(!S.payments)S.payments=[];
-  const sr=document.getElementById('pmtStatRow');if(!sr)return;
-  const fx=n('tUsdAed')||n('usdAed')||3.67;
-  const total=S.payments.reduce((a,p)=>a+(p.amt||0),0);
-  const confirmed=S.payments.filter(p=>p.confirmed).reduce((a,p)=>a+(p.amt||0),0);
-  const pending=total-confirmed;
-  const totalFees=S.payments.reduce((a,p)=>a+(p.ttFees||0),0);
-  const count=S.payments.length;
-  const confirmedCount=S.payments.filter(p=>p.confirmed).length;
-  sr.innerHTML=`
-    <div class="stat"><div class="sl">Total Payments</div><div class="sv cusd">${count}</div><div class="ss">${confirmedCount} confirmed</div></div>
-    <div class="stat"><div class="sl">Total Sent (USD)</div><div class="sv cusd">$${f(total)}</div><div class="ss">${f(total*fx,0)} AED</div></div>
-    <div class="stat" style="border-color:var(--green)"><div class="sl">Confirmed</div><div class="sv" style="color:var(--green)">$${f(confirmed)}</div><div class="ss" style="color:var(--sky)">${f(confirmed*fx,0)} AED</div></div>
-    <div class="stat" style="border-color:var(--orange)"><div class="sl">Pending</div><div class="sv" style="color:var(--orange)">$${f(pending)}</div><div class="ss" style="color:var(--sky)">${f(pending*fx,0)} AED</div></div>
-    <div class="stat"><div class="sl">Total TT Fees</div><div class="sv cred">$${f(totalFees)}</div><div class="ss">${f(totalFees*fx,0)} AED</div></div>`;
-}
-</script>
-</body>
-</html>
+💱 USDT Calc
+↻
+Sync
+⚙️
+🔒
+💱 Deal Calc
+📊 Tracker
+📁 Saved Deals
+🗓️ Payment Schedule
+📥 Deal Inputs
+Net USD Client Receives
+260380
+💵 The exact USD amount the client gets in their account (before any commissions)
+USD / AED Rate
+3.67
+🏦 Bank FX rate — converts USD ↔ AED
+USDT Buy Rate (Leo)
+3.642
+🟡 Rate Leo charges you per USDT (in AED) — your cost
+USDT Market Rate
+3.67
+📈 Current public market price of USDT — spread profit = (market − Leo's rate) × USDT
+Dealer Comm % (Sunny)
+2
+🤝 Sunny's cut — added on top of client's USD, you hand this to Sunny in cash
+Your Comm %
+1
+💰 Your fee for arranging the USD transfer — this is your gross commission
+Transfer Fees (USD)
+400
+🏧 Wire/TT bank fees deducted from your commission
+Boss Split %
+50
+👔 Boss takes this % of your net commission (after fees)
+💾 Save Deal
+e.g. Deal #3 — Client B
+Save
+USDT → Request Leo
+270,253 USDT
+Total USDT
+AED Pool
+984,262 AED
+Leo sends you
+Hand Sunny
+$265,588
+Client + dealer comm
+Your Total Profit
+$3,163.78
+Comm + spread
+🔢 Step-by-Step
+USD
+AED
+USDT
+① Net USD to client
+260,380.00
+955,594.60
+—
+② Dealer comm (Sunny)
+5,207.60
+19,111.89
+—
+③ Your commission
+2,603.80
+9,555.95
+—
+④ Total needed
+268,191.40
+984,262.44
+—
+⑤ USDT from Leo
+268,191.40
+984,262.44
+270,253.28
+💸 Money Flow
+USD
+AED
+USDT
+Leo sends you
+—
+984,262.44
+270,253.28
+Send client (net)
+260,380.00
+955,594.60
+—
+Hand Sunny (client + 2%)
+265,587.60
+974,706.49
+—
+You keep (gross comm)
+2,603.80
+9,555.95
+—
+📈 Your Profit Breakdown
+Two profit sources: ① USD Transfer Commission (your % on the client's USD, minus fees & boss split) + ② USDT Spread (you bought USDT from Leo cheaper than market — that difference is 100% yours).
+USD
+AED
+💸 Source 1 — USD Transfer Commission
+① Your gross comm (1% of client USD)
+2,603.80
+9,555.95
+1.0% of 260,380
+Less wire/TT transfer fees
+-400.00
+-1,468.00
+—
+Net comm after fees
+2,203.80
+8,087.95
+—
+Boss takes 50% of net
+1,101.90
+4,043.97
+—
+→ Your net commission (from USD TT transfer)
+1,101.90
+4,043.97
+—
+📈 Source 2 — USDT Rate Spread
+② USDT spread (market rate − Leo's buy rate) × USDT sent
+2,061.88
+7,567.09
+0.77% spread
+💰 Your Total Profit
+$3,163.78
+11,611.06 AED
+💸 USD Transfer Comm
+Your % cut after fees & boss split
+$1,101.90
+4,043.97 AED
+📈 USDT Rate Spread
+Market rate − Leo's rate × USDT (100% yours)
+$2,061.88
+7,567.09 AED
+🔁 LEO — USD to USDT Converter
+Leo wants to receive (USD)
+e.g. 260380
+Enter Leo's target USD amount → see USDT you must send
+USDT / AED Rate
+3.67
+USD / AED Rate
+3.67
